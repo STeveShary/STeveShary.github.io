@@ -1,0 +1,272 @@
+<!doctype html>
+<!--[if lt IE 7]><html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
+<!--[if (IE 7)&!(IEMobile)]><html class="no-js lt-ie9 lt-ie8" lang="en"><![endif]-->
+<!--[if (IE 8)&!(IEMobile)]><html class="no-js lt-ie9" lang="en"><![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en"><!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<title>Customize Gradle to setup Intellij &#8211; STeve Smash Code</title>
+<meta name="description" content="Detailed instructions to Setup JDK, VCS, Project Settings, and Plugin Settings.">
+<meta name="keywords" content="Intellij Gradle">
+
+
+
+<!-- Open Graph -->
+<meta property="og:locale" content="en_US">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Customize Gradle to setup Intellij">
+<meta property="og:description" content="Detailed instructions to Setup JDK, VCS, Project Settings, and Plugin Settings.">
+<meta property="og:url" content="/developer%20setup/Gradle-Intellij-Setup/">
+<meta property="og:site_name" content="STeve Smash Code">
+
+
+
+
+
+<link rel="canonical" href="/developer%20setup/Gradle-Intellij-Setup/">
+<link href="/feed.xml" type="application/atom+xml" rel="alternate" title="STeve Smash Code Feed">
+
+<!-- http://t.co/dKP3o1e -->
+<meta name="HandheldFriendly" content="True">
+<meta name="MobileOptimized" content="320">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no"/>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="stylesheet" href="/assets/css/jquery.mmenu.all.css">
+<link rel="stylesheet" href="/assets/css/jquery.floating-social-share.min.css">
+<!-- Webfonts -->
+<link href="//fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic" rel="stylesheet" type="text/css">
+
+<meta http-equiv="cleartype" content="on">
+
+<!-- Load Modernizr -->
+<script src="/assets/js/vendor/modernizr-2.6.2.custom.min.js"></script>
+
+<!-- Icons -->
+<!-- 16x16 -->
+<link rel="shortcut icon" href="/favicon.ico">
+<!-- 32x32 -->
+<link rel="shortcut icon" href="/favicon.png">
+<!-- 57x57 (precomposed) for iPhone 3GS, pre-2011 iPod Touch and older Android devices -->
+<link rel="apple-touch-icon-precomposed" href="/images/apple-touch-icon-precomposed.png">
+<!-- 72x72 (precomposed) for 1st generation iPad, iPad 2 and iPad mini -->
+<link rel="apple-touch-icon-precomposed" sizes="72x72" href="/images/apple-touch-icon-72x72-precomposed.png">
+<!-- 114x114 (precomposed) for iPhone 4, 4S, 5 and post-2011 iPod Touch -->
+<link rel="apple-touch-icon-precomposed" sizes="114x114" href="/images/apple-touch-icon-114x114-precomposed.png">
+<!-- 144x144 (precomposed) for iPad 3rd and 4th generation -->
+<link rel="apple-touch-icon-precomposed" sizes="144x144" href="/images/apple-touch-icon-144x144-precomposed.png">
+
+
+
+</head>
+
+<body id="post" >
+
+<!--[if lt IE 9]><div class="upgrade"><strong><a href="http://whatbrowser.org/">Your browser is quite old!</strong> Why not upgrade to a different browser to better enjoy this site?</a></div><![endif]-->
+
+
+
+<div class="entry-header">
+  <div class="header-menu header-menu-top header-menu-overflow">
+    <ul>
+      <li class="header-item-title header-toggle "><a href="#menu"><h2><i class="fa fa-bars"></i></h2></a></li>
+      <li class="header-item-title">
+        <a href="/">
+          
+          <h2 class="title"> STeve Smash Code</h2>
+        </a>
+      </li>
+      
+        
+        
+
+        
+          <li class="header-item "><a href="/about"><h3>About</h3></a></li>
+        
+      
+      <li class="header-item  "><a href="/search"><h3><i class="fa fa-search"></i></h3></a></li>
+    </ul>
+  </div>
+</div><!-- /.entry-header -->
+
+
+<nav id="menu" style="display: none">
+  <ul>
+    
+      
+        <li><a href="/about"><h3>About</h3></a></li>
+      
+    
+  </ul>
+</nav>
+
+
+
+
+<div id="main" role="main">
+  <article class="hentry">
+    <div class="entry-content">
+      <div class="entry-meta">
+        <span class="entry-date date published updated"><time datetime="2015-12-24T00:00:00-05:00"><a href="">December 24, 2015</a></time></span>
+        </span>
+        
+        <span class="entry-reading-time">
+          <i class="fa fa-clock-o"></i>
+          
+          Reading time ~3 minutes
+        </span><!-- /.entry-reading-time -->
+        
+      </div><!-- /.entry-meta -->
+      <h1 class="post-title entry-title">Customize Gradle to setup Intellij</h1>
+
+      <h2 id="automating-efficiency">Automating Efficiency</h2>
+
+<p>Setting up Intellij isn’t hard.  Getting everyone on your team to do it is another thing.  Developer efficiency is no small matter.  Getting faster feedback to devs can improve efficiency and correctness.  Lisa Crispin talks about this in her blog about continuous integration and farming with donkeys:</p>
+
+<blockquote>
+  <p>If we have a continuous integration process that runs our regression tests on each new version of the code, we know within a few minutes or hours whether new or updated code has broken something. When we know right away, it’s easy to fix. Problems don’t worry us, because we know we can fix them in a timely manner and move on.
+Short feedback loops give us confidence. Confidence leads to enjoyment.</p>
+</blockquote>
+
+<p><a href="http://lisacrispin.com/2011/03/20/shortening-the-feedback-loop/">Source</a></p>
+
+<h2 id="setting-up-the-intellij-project">Setting up the Intellij Project</h2>
+
+<p>Let’s start with the project.  Gradle has documentation <a href="https://docs.gradle.org/current/dsl/org.gradle.plugins.ide.idea.model.IdeaProject.html">here</a>.</p>
+
+<p>Below is an example idea configuration used in my base <code class="highlighter-rouge">build.gradle</code> file in the project.  I’ll go into detail on what each of the different sections mean.</p>
+
+<noscript><pre>400: Invalid request
+</pre></noscript>
+<script src="https://gist.github.com/9a2fa5246c3dfbf04943.js"> </script>
+
+<p>Looking at lines 7 and 8, there are two basic settings that can be set: the JDK level and the version control system.  These are basic options in the <a href="https://docs.gradle.org/current/dsl/org.gradle.plugins.ide.idea.model.IdeaProject.html">idea plugin Source</a>  Being documented and pretty straight-forward, it’s not hard to understand what these do.  Let’s move the crazier part.</p>
+
+<h4 id="setting-annotation-processing">Setting Annotation Processing</h4>
+
+<p>Line 10 is interesting because here, we are going to modify the XML.  Intellij stores its configuration in a .ipr file in the root project directory.  So line 10 says “let’s modify that .ipr file.”  The first block is where we find the node “CompilerCOnfiguration” and then modify the contents.  We have to think of in-place changes because we don’t know the original state of the ipr file.  So this block:</p>
+
+<figure class="highlight"><pre><code class="language-groovy" data-lang="groovy">          <span class="c1">// enable 'Annotation Processors'</span>
+           <span class="n">xmlFile</span><span class="o">.</span><span class="na">asNode</span><span class="o">().</span><span class="na">component</span><span class="o">.</span><span class="na">find</span> <span class="o">{</span>
+               <span class="n">it</span><span class="o">.</span><span class="nd">@name</span> <span class="o">==</span> <span class="s1">'CompilerConfiguration'</span>
+           <span class="o">}[</span><span class="s1">'annotationProcessing'</span><span class="o">][</span><span class="mi">0</span><span class="o">].</span><span class="na">replaceNode</span> <span class="o">{</span>
+               <span class="n">annotationProcessing</span> <span class="o">{</span>
+                   <span class="n">profile</span><span class="o">(</span><span class="nl">default:</span> <span class="kc">true</span><span class="o">,</span> <span class="nl">name:</span> <span class="s1">'Default'</span><span class="o">,</span> <span class="nl">useClasspath:</span> <span class="s1">'true'</span><span class="o">,</span> <span class="nl">enabled:</span> <span class="kc">true</span><span class="o">)</span>
+               <span class="o">}</span>
+           <span class="o">}</span></code></pre></figure>
+
+<p>will produce the XML snippet:</p>
+
+<figure class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="nt">&lt;project</span> <span class="na">version=</span><span class="s">"4"</span><span class="nt">&gt;</span>
+ [...]
+  <span class="nt">&lt;component</span> <span class="na">name=</span><span class="s">"CompilerConfiguration"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;annotationProcessing&gt;</span>
+      <span class="nt">&lt;profile</span> <span class="na">default=</span><span class="s">"true"</span> <span class="na">name=</span><span class="s">"Default"</span> <span class="na">enabled=</span><span class="s">"true"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;processorPath</span> <span class="na">useClasspath=</span><span class="s">"true"</span> <span class="nt">/&gt;</span>
+      <span class="nt">&lt;/profile&gt;</span>
+    <span class="nt">&lt;/annotationProcessing&gt;</span>
+  <span class="nt">&lt;/component&gt;</span></code></pre></figure>
+
+<p>We put this specific change in to automatically turn on annotation processing in Intellij.  This allows the Lombok plugin to compile correctly in Intellij.  You might ask “<a href="http://jnb.ociweb.com/jnb/jnbJan2010.html">What’ lombok?</a>”, well my friend, it makes POJOs into what I think that they should be.</p>
+
+<h4 id="setting-git-vcs-root">Setting Git VCS root</h4>
+
+<p>Intellij made this interesting “feature” where when it knows that you are using Git, it wants to know where the root of the repository is set so it can properly track changes.  Virtually every instance, it is the annoying popup in the top left where it asks you to set the VCS root.  Then when you open the dialog, it has everything set and all you have to hit is “ok”.  Well clicking buttons is annoying.  So lines 21 to 26 do this for us.  The gradle xml changes below:</p>
+
+<figure class="highlight"><pre><code class="language-groovy" data-lang="groovy">      <span class="c1">// setup Git root</span>
+      <span class="n">xmlFile</span><span class="o">.</span><span class="na">asNode</span><span class="o">().</span><span class="na">component</span><span class="o">.</span><span class="na">find</span> <span class="o">{</span> <span class="n">it</span><span class="o">.</span><span class="nd">@name</span> <span class="o">==</span> <span class="s1">'VcsDirectoryMappings'</span> <span class="o">}.</span><span class="na">replaceNode</span> <span class="o">{</span>
+          <span class="n">component</span><span class="o">(</span><span class="nl">name:</span> <span class="s1">'VcsDirectoryMappings'</span><span class="o">)</span> <span class="o">{</span>
+              <span class="n">mapping</span><span class="o">(</span><span class="nl">directory:</span> <span class="s2">""</span><span class="o">,</span> <span class="nl">vcs:</span> <span class="s2">""</span><span class="o">)</span>
+              <span class="n">mapping</span><span class="o">(</span><span class="nl">directory:</span> <span class="s2">"\$PROJECT_DIR\$"</span><span class="o">,</span> <span class="nl">vcs:</span> <span class="s1">'Git'</span><span class="o">)</span>
+          <span class="o">}</span>
+      <span class="o">}</span></code></pre></figure>
+
+<p>will produce the XML snippet:</p>
+
+<figure class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="nt">&lt;project</span> <span class="na">version=</span><span class="s">"4"</span><span class="nt">&gt;</span>
+
+ [...]
+
+   <span class="nt">&lt;component</span> <span class="na">name=</span><span class="s">"VcsDirectoryMappings"</span><span class="nt">&gt;</span>
+     <span class="nt">&lt;mapping</span> <span class="na">directory=</span><span class="s">"$PROJECT_DIR$"</span> <span class="na">vcs=</span><span class="s">"Git"</span> <span class="nt">/&gt;</span>
+   <span class="nt">&lt;/component&gt;</span></code></pre></figure>
+
+<p>Voilla!</p>
+
+<h2 id="setting-up-the-intellij-module">Setting up the Intellij Module</h2>
+
+<p>In Intellij, “A module is a discrete unit of functionality that can be run, tested, and debugged independently.” <a href="http://www.jetbrains.org/intellij/sdk/docs/basics/project_structure.html">Source</a>.  Here, we are going to use the idea plugin to setup our spring inspection and Infinitest setup.</p>
+
+<p>As before, below is the gist of the project changes.  We’ll go into details about what each line is.</p>
+
+<noscript><pre>400: Invalid request
+</pre></noscript>
+<script src="https://gist.github.com/a163f485c86ff4452bf8.js"> </script>
+
+
+    </div><!-- /.entry-content -->
+    <section id="disqus_thread"></section><!-- /#disqus_thread -->
+    <div class="read-more">
+  
+    <div class="read-more-header">
+      <a href="/developer%20setup/Gradle-Intellij/" class="read-more-btn">Read More</a>
+    </div><!-- /.read-more-header -->
+    <div class="read-more-content">
+      <h3><a href="/developer%20setup/Gradle-Intellij/" title="Intellij and Gradle Setup and Integration">Intellij and Gradle Setup and Integration</a></h3>
+      <p>There are a couple of ways to integrate the Intellij project setup and Gradle setup. <a href="/developer%20setup/Gradle-Intellij/">Continue reading</a></p>
+    </div><!-- /.read-more-content -->
+  
+  <div class="read-more-list">
+    
+  </div><!-- /.read-more-list -->
+</div><!-- /.read-more -->
+  </article>
+</div><!-- /#main -->
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script>window.jQuery || document.write('<script src="/assets/js/vendor/jquery-1.9.1.min.js"><\/script>')</script>
+<script src="/assets/js/scripts.min.js"></script>
+<script async defer id="github-bjs" src="https://buttons.github.io/buttons.js"></script>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+
+
+
+
+
+    <script type="text/javascript">
+        /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+        var disqus_shortname = 'TODO'; // required: replace example with your forum shortname
+
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function () {
+            var s = document.createElement('script'); s.async = true;
+            s.type = 'text/javascript';
+            s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+            (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+        }());
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+
+
+<div class="footer-wrapper">
+  <footer role="contentinfo">
+    <span>&copy; 2015 Stephen Shary. Powered by <a href="http://jekyllrb.com" rel="nofollow">Jekyll</a> using the <a href="http://github.com/aron-bordin/neo-hpstr-jekyll-theme" rel="nofollow">Neo-HPSTR Theme</a>.</span>
+
+  </footer>
+</div><!-- /.footer-wrapper -->
+
+</body>
+</html>

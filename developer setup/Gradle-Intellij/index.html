@@ -1,0 +1,241 @@
+<!doctype html>
+<!--[if lt IE 7]><html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
+<!--[if (IE 7)&!(IEMobile)]><html class="no-js lt-ie9 lt-ie8" lang="en"><![endif]-->
+<!--[if (IE 8)&!(IEMobile)]><html class="no-js lt-ie9" lang="en"><![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en"><!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<title>Intellij and Gradle Setup and Integration &#8211; STeve Smash Code</title>
+<meta name="description" content="There are a couple of ways to integrate the Intellij project setup and Gradle setup.">
+<meta name="keywords" content="Intellij Gradle">
+
+
+
+<!-- Open Graph -->
+<meta property="og:locale" content="en_US">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Intellij and Gradle Setup and Integration">
+<meta property="og:description" content="There are a couple of ways to integrate the Intellij project setup and Gradle setup.">
+<meta property="og:url" content="/developer%20setup/Gradle-Intellij/">
+<meta property="og:site_name" content="STeve Smash Code">
+
+
+
+
+
+<link rel="canonical" href="/developer%20setup/Gradle-Intellij/">
+<link href="/feed.xml" type="application/atom+xml" rel="alternate" title="STeve Smash Code Feed">
+
+<!-- http://t.co/dKP3o1e -->
+<meta name="HandheldFriendly" content="True">
+<meta name="MobileOptimized" content="320">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no"/>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="stylesheet" href="/assets/css/jquery.mmenu.all.css">
+<link rel="stylesheet" href="/assets/css/jquery.floating-social-share.min.css">
+<!-- Webfonts -->
+<link href="//fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic" rel="stylesheet" type="text/css">
+
+<meta http-equiv="cleartype" content="on">
+
+<!-- Load Modernizr -->
+<script src="/assets/js/vendor/modernizr-2.6.2.custom.min.js"></script>
+
+<!-- Icons -->
+<!-- 16x16 -->
+<link rel="shortcut icon" href="/favicon.ico">
+<!-- 32x32 -->
+<link rel="shortcut icon" href="/favicon.png">
+<!-- 57x57 (precomposed) for iPhone 3GS, pre-2011 iPod Touch and older Android devices -->
+<link rel="apple-touch-icon-precomposed" href="/images/apple-touch-icon-precomposed.png">
+<!-- 72x72 (precomposed) for 1st generation iPad, iPad 2 and iPad mini -->
+<link rel="apple-touch-icon-precomposed" sizes="72x72" href="/images/apple-touch-icon-72x72-precomposed.png">
+<!-- 114x114 (precomposed) for iPhone 4, 4S, 5 and post-2011 iPod Touch -->
+<link rel="apple-touch-icon-precomposed" sizes="114x114" href="/images/apple-touch-icon-114x114-precomposed.png">
+<!-- 144x144 (precomposed) for iPad 3rd and 4th generation -->
+<link rel="apple-touch-icon-precomposed" sizes="144x144" href="/images/apple-touch-icon-144x144-precomposed.png">
+
+
+
+</head>
+
+<body id="post" >
+
+<!--[if lt IE 9]><div class="upgrade"><strong><a href="http://whatbrowser.org/">Your browser is quite old!</strong> Why not upgrade to a different browser to better enjoy this site?</a></div><![endif]-->
+
+
+
+<div class="entry-header">
+  <div class="header-menu header-menu-top header-menu-overflow">
+    <ul>
+      <li class="header-item-title header-toggle "><a href="#menu"><h2><i class="fa fa-bars"></i></h2></a></li>
+      <li class="header-item-title">
+        <a href="/">
+          
+          <h2 class="title"> STeve Smash Code</h2>
+        </a>
+      </li>
+      
+        
+        
+
+        
+          <li class="header-item "><a href="/about"><h3>About</h3></a></li>
+        
+      
+      <li class="header-item  "><a href="/search"><h3><i class="fa fa-search"></i></h3></a></li>
+    </ul>
+  </div>
+</div><!-- /.entry-header -->
+
+
+<nav id="menu" style="display: none">
+  <ul>
+    
+      
+        <li><a href="/about"><h3>About</h3></a></li>
+      
+    
+  </ul>
+</nav>
+
+
+
+
+<div id="main" role="main">
+  <article class="hentry">
+    <div class="entry-content">
+      <div class="entry-meta">
+        <span class="entry-date date published updated"><time datetime="2015-12-22T00:00:00-05:00"><a href="">December 22, 2015</a></time></span>
+        </span>
+        
+        <span class="entry-reading-time">
+          <i class="fa fa-clock-o"></i>
+          
+          Reading time ~2 minutes
+        </span><!-- /.entry-reading-time -->
+        
+      </div><!-- /.entry-meta -->
+      <h1 class="post-title entry-title">Intellij and Gradle Setup and Integration</h1>
+
+      <p>There are two main ways to setup your project in Intellij when using gradle as your build tool for a java project:</p>
+
+<ul>
+  <li>Import your gradle project using Intellij.</li>
+  <li>Build your Intellij project using the Gradle idea plugin</li>
+</ul>
+
+<p>Here, I’ll discuss the three approaches and the pros and cons.  The end will talk about I do in the projects that I work on.</p>
+
+<h2 id="import-your-gradle-project-using-intellij">Import your Gradle project Using Intellij</h2>
+
+<p>Intellij has two big nice features:  “ability to import projects from the existing Gradle models. So doing, IntelliJ IDEA downloads all the necessary dependencies” and “ability to synchronize structures of Gradle and IntelliJ IDEA projects.”  In practice, this is where you open a project by selecting the “build.gradle” file in your project and the Intellij wizard(ry) does the rest.</p>
+
+<p>Pros:</p>
+
+<ul>
+  <li>Very simple.</li>
+  <li>Changes are synchronized.  As you change your <code class="highlighter-rouge">build.gradle</code> file, Intellij will automatically pull the dependency down and add it to your build path.  Make sure that you select the check box as seen below for this feature.</li>
+</ul>
+
+<p><img src="images/gradle-import.png" alt="Gradle import window in Intellij" class="center-image" /></p>
+
+<p>Cons:</p>
+
+<ul>
+  <li>Intellij doesn’t import all of your settings.  Specifically, if there are plugin configurations for your project that you use with your <a href="https://docs.gradle.org/current/userguide/idea_plugin.html">idea plugin settings</a></li>
+</ul>
+
+<p><em>NOTE:</em>  JetBrains recommends that if you want to share your project settings on your team, that you should “.idea project configuration directory should be shared via version control.” <a href="https://www.jetbrains.com/idea/help/synchronizing-and-sharing-settings.html#d1421736e270">Source</a> <a href="https://intellij-support.jetbrains.com/hc/en-us/articles/206827587-How-to-manage-projects-under-Version-Control-Systems">and here</a> but it contains a number of “guidelines” of things that you should not include because they “contain keystore passwords”, “conflicts if another developer has the same name”.  I have also found when a project has these files checked in ( incorrectly albeit ), that every commit will inevitably contain some .iws change.</p>
+
+<h2 id="build-your-intellij-project-using-the-gradle-idea-plugin">Build your Intellij project using the Gradle idea plugin</h2>
+
+<p>Gradle has an <em>idea</em> plugin that allows you to build your Intellij project files.  You just need to include the line:</p>
+
+<figure class="highlight"><pre><code class="language-groovy" data-lang="groovy"><span class="n">apply</span> <span class="nl">plugin:</span> <span class="s1">'idea'</span></code></pre></figure>
+
+<p>and when you run the command <code class="highlighter-rouge">gradlew idea</code> it will download your dependencies and setup your project.</p>
+
+<p>Pros:</p>
+
+<ul>
+  <li>Very simple to setup dependencies.</li>
+  <li>You can customize project settings including your Version Control, JDK Version, and other plugin settings.</li>
+</ul>
+
+<p>Cons:</p>
+
+<ul>
+  <li>Changes are not automatically synchronized.  You need to run <code class="highlighter-rouge">gradlew idea</code> to rebuild your dependencies.</li>
+  <li>Making custom changes are not simple.  Most of them involve XML manipulation using groovy.</li>
+</ul>
+
+<h2 id="so-what-did-i-choose">So What Did I Choose?</h2>
+
+<p>I chose to use the second option.  I found that even if the setup is harder, it’s worth it to automatically configure more parts of the development environment.  We have strong developers that spend the time to get their environment just right.  But, there are equally more people that will work with less optimal systems because they are unsure how to get it working.</p>
+
+    </div><!-- /.entry-content -->
+    <section id="disqus_thread"></section><!-- /#disqus_thread -->
+    <div class="read-more">
+  
+    <div class="read-more-header">
+      <a href="" class="read-more-btn">Read More</a>
+    </div><!-- /.read-more-header -->
+    <div class="read-more-content">
+      <h3><a href="/developer%20setup/Gradle-Intellij-Setup/" title="Customize Gradle to setup Intellij">Customize Gradle to setup Intellij</a></h3>
+      <p>Detailed instructions to Setup JDK, VCS, Project Settings, and Plugin Settings. <a href="/developer%20setup/Gradle-Intellij-Setup/">Continue reading</a></p>
+    </div><!-- /.read-more-content -->
+  
+  <div class="read-more-list">
+    
+  </div><!-- /.read-more-list -->
+</div><!-- /.read-more -->
+  </article>
+</div><!-- /#main -->
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script>window.jQuery || document.write('<script src="/assets/js/vendor/jquery-1.9.1.min.js"><\/script>')</script>
+<script src="/assets/js/scripts.min.js"></script>
+<script async defer id="github-bjs" src="https://buttons.github.io/buttons.js"></script>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+
+
+
+
+
+    <script type="text/javascript">
+        /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+        var disqus_shortname = 'TODO'; // required: replace example with your forum shortname
+
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function () {
+            var s = document.createElement('script'); s.async = true;
+            s.type = 'text/javascript';
+            s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+            (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+        }());
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+
+
+<div class="footer-wrapper">
+  <footer role="contentinfo">
+    <span>&copy; 2015 Stephen Shary. Powered by <a href="http://jekyllrb.com" rel="nofollow">Jekyll</a> using the <a href="http://github.com/aron-bordin/neo-hpstr-jekyll-theme" rel="nofollow">Neo-HPSTR Theme</a>.</span>
+
+  </footer>
+</div><!-- /.footer-wrapper -->
+
+</body>
+</html>

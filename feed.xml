@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+<title type="text">STeve Smash Code</title>
+<generator uri="https://github.com/mojombo/jekyll">Jekyll</generator>
+<link rel="self" type="application/atom+xml" href="/feed.xml" />
+<link rel="alternate" type="text/html" href="" />
+<updated>2015-12-28T21:48:43-05:00</updated>
+<id>/</id>
+<author>
+  <name>Stephen Shary</name>
+  <uri>/</uri>
+  <email>stephen.shary@gmail.com`</email>
+</author>
+
+
+<entry>
+  <title type="html"><![CDATA[Customize Gradle to setup Intellij]]></title>
+ <link rel="alternate" type="text/html" href="/developer%20setup/Gradle-Intellij-Setup/" />
+  <id>/developer%20setup/Gradle-Intellij-Setup</id>
+  <updated>2015-12-24T00:00:00-00:00</updated>
+  <published>2015-12-24T00:00:00-05:00</published>
+  
+  <author>
+    <name>Stephen Shary</name>
+    <uri></uri>
+    <email>stephen.shary@gmail.com`</email>
+  </author>
+  <content type="html">
+    &lt;h2 id=&quot;automating-efficiency&quot;&gt;Automating Efficiency&lt;/h2&gt;
+
+&lt;p&gt;Setting up Intellij isn’t hard.  Getting everyone on your team to do it is another thing.  Developer efficiency is no small matter.  Getting faster feedback to devs can improve efficiency and correctness.  Lisa Crispin talks about this in her blog about continuous integration and farming with donkeys:&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;If we have a continuous integration process that runs our regression tests on each new version of the code, we know within a few minutes or hours whether new or updated code has broken something. When we know right away, it’s easy to fix. Problems don’t worry us, because we know we can fix them in a timely manner and move on.
+Short feedback loops give us confidence. Confidence leads to enjoyment.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://lisacrispin.com/2011/03/20/shortening-the-feedback-loop/&quot;&gt;Source&lt;/a&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;setting-up-the-intellij-project&quot;&gt;Setting up the Intellij Project&lt;/h2&gt;
+
+&lt;p&gt;Let’s start with the project.  Gradle has documentation &lt;a href=&quot;https://docs.gradle.org/current/dsl/org.gradle.plugins.ide.idea.model.IdeaProject.html&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Below is an example idea configuration used in my base &lt;code class=&quot;highlighter-rouge&quot;&gt;build.gradle&lt;/code&gt; file in the project.  I’ll go into detail on what each of the different sections mean.&lt;/p&gt;
+
+&lt;noscript&gt;&lt;pre&gt;400: Invalid request
+&lt;/pre&gt;&lt;/noscript&gt;
+&lt;script src=&quot;https://gist.github.com/9a2fa5246c3dfbf04943.js&quot;&gt; &lt;/script&gt;
+
+&lt;p&gt;Looking at lines 7 and 8, there are two basic settings that can be set: the JDK level and the version control system.  These are basic options in the &lt;a href=&quot;https://docs.gradle.org/current/dsl/org.gradle.plugins.ide.idea.model.IdeaProject.html&quot;&gt;idea plugin Source&lt;/a&gt;  Being documented and pretty straight-forward, it’s not hard to understand what these do.  Let’s move the crazier part.&lt;/p&gt;
+
+&lt;h4 id=&quot;setting-annotation-processing&quot;&gt;Setting Annotation Processing&lt;/h4&gt;
+
+&lt;p&gt;Line 10 is interesting because here, we are going to modify the XML.  Intellij stores its configuration in a .ipr file in the root project directory.  So line 10 says “let’s modify that .ipr file.”  The first block is where we find the node “CompilerCOnfiguration” and then modify the contents.  We have to think of in-place changes because we don’t know the original state of the ipr file.  So this block:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-groovy&quot; data-lang=&quot;groovy&quot;&gt;          &lt;span class=&quot;c1&quot;&gt;// enable &#39;Annotation Processors&#39;&lt;/span&gt;
+           &lt;span class=&quot;n&quot;&gt;xmlFile&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;asNode&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;().&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;component&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;find&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+               &lt;span class=&quot;n&quot;&gt;it&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nd&quot;&gt;@name&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&#39;CompilerConfiguration&#39;&lt;/span&gt;
+           &lt;span class=&quot;o&quot;&gt;}[&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&#39;annotationProcessing&#39;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;][&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;].&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;replaceNode&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+               &lt;span class=&quot;n&quot;&gt;annotationProcessing&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+                   &lt;span class=&quot;n&quot;&gt;profile&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;default:&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nl&quot;&gt;name:&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&#39;Default&#39;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nl&quot;&gt;useClasspath:&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&#39;true&#39;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nl&quot;&gt;enabled:&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+               &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+           &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;will produce the XML snippet:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-xml&quot; data-lang=&quot;xml&quot;&gt;&lt;span class=&quot;cp&quot;&gt;&amp;lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;project&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;version=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;4&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;
+ [...]
+  &lt;span class=&quot;nt&quot;&gt;&amp;lt;component&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;name=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;CompilerConfiguration&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;annotationProcessing&amp;gt;&lt;/span&gt;
+      &lt;span class=&quot;nt&quot;&gt;&amp;lt;profile&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;default=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;true&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;name=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Default&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;enabled=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;true&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;processorPath&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;useClasspath=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;true&quot;&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;/&amp;gt;&lt;/span&gt;
+      &lt;span class=&quot;nt&quot;&gt;&amp;lt;/profile&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;/annotationProcessing&amp;gt;&lt;/span&gt;
+  &lt;span class=&quot;nt&quot;&gt;&amp;lt;/component&amp;gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;We put this specific change in to automatically turn on annotation processing in Intellij.  This allows the Lombok plugin to compile correctly in Intellij.  You might ask “&lt;a href=&quot;http://jnb.ociweb.com/jnb/jnbJan2010.html&quot;&gt;What’ lombok?&lt;/a&gt;”, well my friend, it makes POJOs into what I think that they should be.&lt;/p&gt;
+
+&lt;h4 id=&quot;setting-git-vcs-root&quot;&gt;Setting Git VCS root&lt;/h4&gt;
+
+&lt;p&gt;Intellij made this interesting “feature” where when it knows that you are using Git, it wants to know where the root of the repository is set so it can properly track changes.  Virtually every instance, it is the annoying popup in the top left where it asks you to set the VCS root.  Then when you open the dialog, it has everything set and all you have to hit is “ok”.  Well clicking buttons is annoying.  So lines 21 to 26 do this for us.  The gradle xml changes below:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-groovy&quot; data-lang=&quot;groovy&quot;&gt;      &lt;span class=&quot;c1&quot;&gt;// setup Git root&lt;/span&gt;
+      &lt;span class=&quot;n&quot;&gt;xmlFile&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;asNode&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;().&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;component&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;find&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;it&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nd&quot;&gt;@name&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&#39;VcsDirectoryMappings&#39;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;}.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;replaceNode&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+          &lt;span class=&quot;n&quot;&gt;component&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;name:&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&#39;VcsDirectoryMappings&#39;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+              &lt;span class=&quot;n&quot;&gt;mapping&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;directory:&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nl&quot;&gt;vcs:&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+              &lt;span class=&quot;n&quot;&gt;mapping&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;directory:&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;\$PROJECT_DIR\$&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nl&quot;&gt;vcs:&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&#39;Git&#39;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+          &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+      &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;will produce the XML snippet:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-xml&quot; data-lang=&quot;xml&quot;&gt;&lt;span class=&quot;cp&quot;&gt;&amp;lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;project&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;version=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;4&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;
+
+ [...]
+
+   &lt;span class=&quot;nt&quot;&gt;&amp;lt;component&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;name=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;VcsDirectoryMappings&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;
+     &lt;span class=&quot;nt&quot;&gt;&amp;lt;mapping&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;directory=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;$PROJECT_DIR$&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;vcs=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Git&quot;&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;/&amp;gt;&lt;/span&gt;
+   &lt;span class=&quot;nt&quot;&gt;&amp;lt;/component&amp;gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Voilla!&lt;/p&gt;
+
+&lt;h2 id=&quot;setting-up-the-intellij-module&quot;&gt;Setting up the Intellij Module&lt;/h2&gt;
+
+&lt;p&gt;In Intellij, “A module is a discrete unit of functionality that can be run, tested, and debugged independently.” &lt;a href=&quot;http://www.jetbrains.org/intellij/sdk/docs/basics/project_structure.html&quot;&gt;Source&lt;/a&gt;.  Here, we are going to use the idea plugin to setup our spring inspection and Infinitest setup.&lt;/p&gt;
+
+&lt;p&gt;As before, below is the gist of the project changes.  We’ll go into details about what each line is.&lt;/p&gt;
+
+&lt;noscript&gt;&lt;pre&gt;400: Invalid request
+&lt;/pre&gt;&lt;/noscript&gt;
+&lt;script src=&quot;https://gist.github.com/a163f485c86ff4452bf8.js&quot;&gt; &lt;/script&gt;
+
+
+    &lt;p&gt;&lt;a href=&quot;/developer%20setup/Gradle-Intellij-Setup/&quot;&gt;Customize Gradle to setup Intellij&lt;/a&gt; was originally published by Stephen Shary at &lt;a href=&quot;&quot;&gt;STeve Smash Code&lt;/a&gt; on December 24, 2015.&lt;/p&gt;
+  </content>
+</entry>
+
+
+<entry>
+  <title type="html"><![CDATA[Intellij and Gradle Setup and Integration]]></title>
+ <link rel="alternate" type="text/html" href="/developer%20setup/Gradle-Intellij/" />
+  <id>/developer%20setup/Gradle-Intellij</id>
+  <updated>2015-12-23T00:00:00-00:00</updated>
+  <published>2015-12-22T00:00:00-05:00</published>
+  
+  <author>
+    <name>Stephen Shary</name>
+    <uri></uri>
+    <email>stephen.shary@gmail.com`</email>
+  </author>
+  <content type="html">
+    &lt;p&gt;There are two main ways to setup your project in Intellij when using gradle as your build tool for a java project:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Import your gradle project using Intellij.&lt;/li&gt;
+  &lt;li&gt;Build your Intellij project using the Gradle idea plugin&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Here, I’ll discuss the three approaches and the pros and cons.  The end will talk about I do in the projects that I work on.&lt;/p&gt;
+
+&lt;h2 id=&quot;import-your-gradle-project-using-intellij&quot;&gt;Import your Gradle project Using Intellij&lt;/h2&gt;
+
+&lt;p&gt;Intellij has two big nice features:  “ability to import projects from the existing Gradle models. So doing, IntelliJ IDEA downloads all the necessary dependencies” and “ability to synchronize structures of Gradle and IntelliJ IDEA projects.”  In practice, this is where you open a project by selecting the “build.gradle” file in your project and the Intellij wizard(ry) does the rest.&lt;/p&gt;
+
+&lt;p&gt;Pros:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Very simple.&lt;/li&gt;
+  &lt;li&gt;Changes are synchronized.  As you change your &lt;code class=&quot;highlighter-rouge&quot;&gt;build.gradle&lt;/code&gt; file, Intellij will automatically pull the dependency down and add it to your build path.  Make sure that you select the check box as seen below for this feature.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;img src=&quot;images/gradle-import.png&quot; alt=&quot;Gradle import window in Intellij&quot; class=&quot;center-image&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Cons:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Intellij doesn’t import all of your settings.  Specifically, if there are plugin configurations for your project that you use with your &lt;a href=&quot;https://docs.gradle.org/current/userguide/idea_plugin.html&quot;&gt;idea plugin settings&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;em&gt;NOTE:&lt;/em&gt;  JetBrains recommends that if you want to share your project settings on your team, that you should “.idea project configuration directory should be shared via version control.” &lt;a href=&quot;https://www.jetbrains.com/idea/help/synchronizing-and-sharing-settings.html#d1421736e270&quot;&gt;Source&lt;/a&gt; &lt;a href=&quot;https://intellij-support.jetbrains.com/hc/en-us/articles/206827587-How-to-manage-projects-under-Version-Control-Systems&quot;&gt;and here&lt;/a&gt; but it contains a number of “guidelines” of things that you should not include because they “contain keystore passwords”, “conflicts if another developer has the same name”.  I have also found when a project has these files checked in ( incorrectly albeit ), that every commit will inevitably contain some .iws change.&lt;/p&gt;
+
+&lt;h2 id=&quot;build-your-intellij-project-using-the-gradle-idea-plugin&quot;&gt;Build your Intellij project using the Gradle idea plugin&lt;/h2&gt;
+
+&lt;p&gt;Gradle has an &lt;em&gt;idea&lt;/em&gt; plugin that allows you to build your Intellij project files.  You just need to include the line:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-groovy&quot; data-lang=&quot;groovy&quot;&gt;&lt;span class=&quot;n&quot;&gt;apply&lt;/span&gt; &lt;span class=&quot;nl&quot;&gt;plugin:&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&#39;idea&#39;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;and when you run the command &lt;code class=&quot;highlighter-rouge&quot;&gt;gradlew idea&lt;/code&gt; it will download your dependencies and setup your project.&lt;/p&gt;
+
+&lt;p&gt;Pros:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Very simple to setup dependencies.&lt;/li&gt;
+  &lt;li&gt;You can customize project settings including your Version Control, JDK Version, and other plugin settings.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Cons:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Changes are not automatically synchronized.  You need to run &lt;code class=&quot;highlighter-rouge&quot;&gt;gradlew idea&lt;/code&gt; to rebuild your dependencies.&lt;/li&gt;
+  &lt;li&gt;Making custom changes are not simple.  Most of them involve XML manipulation using groovy.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;so-what-did-i-choose&quot;&gt;So What Did I Choose?&lt;/h2&gt;
+
+&lt;p&gt;I chose to use the second option.  I found that even if the setup is harder, it’s worth it to automatically configure more parts of the development environment.  We have strong developers that spend the time to get their environment just right.  But, there are equally more people that will work with less optimal systems because they are unsure how to get it working.&lt;/p&gt;
+
+    &lt;p&gt;&lt;a href=&quot;/developer%20setup/Gradle-Intellij/&quot;&gt;Intellij and Gradle Setup and Integration&lt;/a&gt; was originally published by Stephen Shary at &lt;a href=&quot;&quot;&gt;STeve Smash Code&lt;/a&gt; on December 22, 2015.&lt;/p&gt;
+  </content>
+</entry>
+
+</feed>
