@@ -4,7 +4,7 @@
 <generator uri="https://github.com/mojombo/jekyll">Jekyll</generator>
 <link rel="self" type="application/atom+xml" href="/feed.xml" />
 <link rel="alternate" type="text/html" href="" />
-<updated>2015-12-28T23:11:53-05:00</updated>
+<updated>2016-01-01T20:11:00-05:00</updated>
 <id>/</id>
 <author>
   <name>Stephen Shary</name>
@@ -28,7 +28,7 @@
   <content type="html">
     &lt;h2 id=&quot;automating-efficiency&quot;&gt;Automating Efficiency&lt;/h2&gt;
 
-&lt;p&gt;Setting up Intellij isn’t hard.  Getting everyone on your team to do it is another thing.  Developer efficiency is no small matter.  Getting faster feedback to devs can improve efficiency and correctness.  Lisa Crispin talks about this in her blog about continuous integration and farming with donkeys:&lt;/p&gt;
+&lt;p&gt;Setting up Intellij isn’t hard.  Getting everyone on your team to do it is another thing.  Getting it right so developers are efficient is no small matter.  The little extra integration and goodness can really let people fly.  Configured Intellij environments allow developers to get near real-time feedback on their work.  Lisa Crispin talks about this in her blog about continuous integration and farming with donkeys:&lt;/p&gt;
 
 &lt;blockquote&gt;
   &lt;p&gt;If we have a continuous integration process that runs our regression tests on each new version of the code, we know within a few minutes or hours whether new or updated code has broken something. When we know right away, it’s easy to fix. Problems don’t worry us, because we know we can fix them in a timely manner and move on.
@@ -36,6 +36,8 @@ Short feedback loops give us confidence. Confidence leads to enjoyment.&lt;/p&gt
 &lt;/blockquote&gt;
 
 &lt;p&gt;&lt;a href=&quot;http://lisacrispin.com/2011/03/20/shortening-the-feedback-loop/&quot;&gt;Source&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;While Lisa talks about minutes and hours, I think we should be thinking now in milliseconds and seconds for a feedback loop.&lt;/p&gt;
 
 &lt;h2 id=&quot;setting-up-the-intellij-project&quot;&gt;Setting up the Intellij Project&lt;/h2&gt;
 
@@ -51,7 +53,7 @@ Short feedback loops give us confidence. Confidence leads to enjoyment.&lt;/p&gt
 
 &lt;h4 id=&quot;setting-annotation-processing&quot;&gt;Setting Annotation Processing&lt;/h4&gt;
 
-&lt;p&gt;Line 10 is interesting because here, we are going to modify the XML.  Intellij stores its configuration in a .ipr file in the root project directory.  So line 10 says “let’s modify that .ipr file.”  The first block is where we find the node “CompilerCOnfiguration” and then modify the contents.  We have to think of in-place changes because we don’t know the original state of the ipr file.  So this block:&lt;/p&gt;
+&lt;p&gt;Line 10 is interesting because here, we are going to modify the XML.  Intellij stores its project configuration in a .ipr file in the root project directory.  So line 10 says “let’s modify that .ipr file.”  The first block is where we find the node “CompilerConfiguration” and then modify the contents.  We have to think of in-place changes because we don’t know the original state of the ipr file.  So this block:&lt;/p&gt;
 
 &lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-groovy&quot; data-lang=&quot;groovy&quot;&gt;          &lt;span class=&quot;c1&quot;&gt;// enable &#39;Annotation Processors&#39;&lt;/span&gt;
            &lt;span class=&quot;n&quot;&gt;xmlFile&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;asNode&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;().&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;component&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;find&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
@@ -79,7 +81,7 @@ Short feedback loops give us confidence. Confidence leads to enjoyment.&lt;/p&gt
 
 &lt;h4 id=&quot;setting-git-vcs-root&quot;&gt;Setting Git VCS root&lt;/h4&gt;
 
-&lt;p&gt;Intellij made this interesting “feature” where when it knows that you are using Git, it wants to know where the root of the repository is set so it can properly track changes.  Virtually every instance, it is the annoying popup in the top left where it asks you to set the VCS root.  Then when you open the dialog, it has everything set and all you have to hit is “ok”.  Well clicking buttons is annoying.  So lines 21 to 26 do this for us.  The gradle xml changes below:&lt;/p&gt;
+&lt;p&gt;Intellij made this interesting “feature” where when it knows that you are using Git, it wants to know where the root of the repository is set so it can properly track changes.  In virtually every instance, it is the annoying popup in the top left where it asks you to set the VCS root.  Then when you open the dialog, it has everything set and all you have to hit is “ok”.  Well clicking buttons is annoying.  So lines 21 to 26 do this for us.  The gradle xml changes below:&lt;/p&gt;
 
 &lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-groovy&quot; data-lang=&quot;groovy&quot;&gt;      &lt;span class=&quot;c1&quot;&gt;// setup Git root&lt;/span&gt;
       &lt;span class=&quot;n&quot;&gt;xmlFile&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;asNode&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;().&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;component&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;find&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;it&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nd&quot;&gt;@name&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&#39;VcsDirectoryMappings&#39;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;}.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;replaceNode&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
@@ -112,6 +114,78 @@ Short feedback loops give us confidence. Confidence leads to enjoyment.&lt;/p&gt
 &lt;/pre&gt;&lt;/noscript&gt;
 &lt;script src=&quot;https://gist.github.com/a163f485c86ff4452bf8.js&quot;&gt; &lt;/script&gt;
 
+&lt;p&gt;The first thing to note is that we are going to be modifying the ‘.iml’ file in the project.  This will allow us to modify which plugins will be active for the module.  The idea plugin will allow us to write to this with lines: 7.  The first thing that we do is get the “FacetManager” node.  This node allows us to set which plugins are active in the module.  Lines 10 through 17 are where we get the xml tag or build one.&lt;/p&gt;
+
+&lt;p&gt;The code below gets the facet manager node and then if it finds it, removes the web facet from it.&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-groovy&quot; data-lang=&quot;groovy&quot;&gt;&lt;span class=&quot;c1&quot;&gt;// Find or define the facetManager XML node.&lt;/span&gt;
+&lt;span class=&quot;kt&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;facetManager&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;xmlFile&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;asNode&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;().&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;component&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;find&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;it&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nd&quot;&gt;@name&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&#39;FacetManager&#39;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;as&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Node&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;facetManager&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;Node&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;webFacet&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;facetManager&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;facet&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;find&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;it&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nd&quot;&gt;@type&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&#39;web&#39;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;webFacet&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+          &lt;span class=&quot;n&quot;&gt;facetManager&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;remove&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;webFacet&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+      &lt;span class=&quot;n&quot;&gt;facetManager&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;xmlFile&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;asNode&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;().&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;appendNode&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&#39;component&#39;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;name:&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&#39;FacetManager&#39;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]);&lt;/span&gt;
+  &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Next, in line 18 we are going to build our own elements so we can attach them.  Lines 20 through 28 build the nodes for spring inpsection.  Line 29 is where we attach that as a sub-element of the “FacetManager” element.&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-groovy&quot; data-lang=&quot;groovy&quot;&gt;&lt;span class=&quot;kt&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;builder&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;NodeBuilder&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;// Setup Spring Wiring inspection.&lt;/span&gt;
+&lt;span class=&quot;kt&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;springFacet&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;builder&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;facet&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;type:&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&#39;Spring&#39;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nl&quot;&gt;name:&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&#39;Spring&#39;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;configuration&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;fileset&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;id:&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&#39;fileset&#39;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nl&quot;&gt;name:&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&#39;Spring Application Context&#39;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;  &lt;span class=&quot;nl&quot;&gt;removed:&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&#39;false&#39;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;file&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&#39;file://$MODULE_DIR$/src/[PATH TO SPRING BOOT APP]/[SPRING BOOT APP CLASS].java&#39;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;){&lt;/span&gt;
+            &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+        &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;facetManager&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;append&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;springFacet&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Lastly, still using the node build object, I build another xml element for Infinitest.&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-groovy&quot; data-lang=&quot;groovy&quot;&gt;&lt;span class=&quot;c1&quot;&gt;// Setup Infinitest integration.&lt;/span&gt;
+&lt;span class=&quot;kt&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;infinitestFacet&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;builder&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;facet&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;type:&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&#39;Infinitest&#39;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nl&quot;&gt;name:&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&#39;Infinitest&#39;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;configuration&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;facetManager&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;append&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;infinitestFacet&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Both of these produces the final output of:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-xml&quot; data-lang=&quot;xml&quot;&gt;&lt;span class=&quot;cp&quot;&gt;&amp;lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;module&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;relativePaths=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;true&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;type=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;JAVA_MODULE&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;version=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;4&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;
+  &lt;span class=&quot;nt&quot;&gt;&amp;lt;component&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;name=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;FacetManager&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;facet&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;type=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Spring&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;name=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Spring&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;
+      &lt;span class=&quot;nt&quot;&gt;&amp;lt;configuration&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;fileset&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;id=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;fileset&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;name=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Spring Application Context&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;removed=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;false&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;
+          &lt;span class=&quot;nt&quot;&gt;&amp;lt;file&amp;gt;&lt;/span&gt;file://$MODULE_DIR$/src/[PATH TO SPRING BOOT APP]/[SPRING BOOT APP CLASS].java&lt;span class=&quot;nt&quot;&gt;&amp;lt;/file&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;/fileset&amp;gt;&lt;/span&gt;
+      &lt;span class=&quot;nt&quot;&gt;&amp;lt;/configuration&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;/facet&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;facet&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;type=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Infinitest&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;name=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Infinitest&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;
+      &lt;span class=&quot;nt&quot;&gt;&amp;lt;configuration&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;/&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;/facet&amp;gt;&lt;/span&gt;
+  &lt;span class=&quot;nt&quot;&gt;&amp;lt;/component&amp;gt;&lt;/span&gt;
+  &lt;span class=&quot;c&quot;&gt;&amp;lt;!-- ... --&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;/module&amp;gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;h4 id=&quot;so-how-do-you-add-your-own-plugin-configurations&quot;&gt;So how do you add your own plugin configurations?&lt;/h4&gt;
+
+&lt;p&gt;I do the following steps:&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Make a copy of your iml or ipr file.&lt;/li&gt;
+  &lt;li&gt;In Intellij, modify your settings to exactly what you want.&lt;/li&gt;
+  &lt;li&gt;Diff the two and determine what XML elements need to be created.&lt;/li&gt;
+  &lt;li&gt;Build the gradle configuration until you get exactly what you want.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&quot;lastly-is-it-worth-the-work&quot;&gt;Lastly: &lt;em&gt;Is it worth the work?&lt;/em&gt;&lt;/h2&gt;
+
+&lt;p&gt;If it’s just you, maybe not.  I tend to work with teams of 3 - 15 developers.  A good chunk of them are really great developers and many of them can get stuck trying to get things setup.  Most developers are lazy &lt;a href=&quot;http://c2.com/cgi/wiki?ProgrammingPerl&quot;&gt;(which isn’t always thought of as a bad thing)&lt;/a&gt; and so making things work “auto-magically” will result in the highest rate of adoption and the lowest rate of grumbling.&lt;/p&gt;
+
+&lt;p&gt;I am always open to hear your thoughts though…&lt;/p&gt;
 
     &lt;p&gt;&lt;a href=&quot;/developer%20setup/Gradle-Intellij-Setup/&quot;&gt;Customize Gradle to setup Intellij&lt;/a&gt; was originally published by Stephen Shary at &lt;a href=&quot;&quot;&gt;STeve Smash Code&lt;/a&gt; on December 24, 2015.&lt;/p&gt;
   </content>

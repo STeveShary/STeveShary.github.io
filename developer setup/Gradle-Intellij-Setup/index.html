@@ -114,7 +114,7 @@
         <span class="entry-reading-time">
           <i class="fa fa-clock-o"></i>
           
-          Reading time ~3 minutes
+          Reading time ~7 minutes
         </span><!-- /.entry-reading-time -->
         
       </div><!-- /.entry-meta -->
@@ -122,7 +122,7 @@
 
       <h2 id="automating-efficiency">Automating Efficiency</h2>
 
-<p>Setting up Intellij isn’t hard.  Getting everyone on your team to do it is another thing.  Developer efficiency is no small matter.  Getting faster feedback to devs can improve efficiency and correctness.  Lisa Crispin talks about this in her blog about continuous integration and farming with donkeys:</p>
+<p>Setting up Intellij isn’t hard.  Getting everyone on your team to do it is another thing.  Getting it right so developers are efficient is no small matter.  The little extra integration and goodness can really let people fly.  Configured Intellij environments allow developers to get near real-time feedback on their work.  Lisa Crispin talks about this in her blog about continuous integration and farming with donkeys:</p>
 
 <blockquote>
   <p>If we have a continuous integration process that runs our regression tests on each new version of the code, we know within a few minutes or hours whether new or updated code has broken something. When we know right away, it’s easy to fix. Problems don’t worry us, because we know we can fix them in a timely manner and move on.
@@ -130,6 +130,8 @@ Short feedback loops give us confidence. Confidence leads to enjoyment.</p>
 </blockquote>
 
 <p><a href="http://lisacrispin.com/2011/03/20/shortening-the-feedback-loop/">Source</a></p>
+
+<p>While Lisa talks about minutes and hours, I think we should be thinking now in milliseconds and seconds for a feedback loop.</p>
 
 <h2 id="setting-up-the-intellij-project">Setting up the Intellij Project</h2>
 
@@ -145,7 +147,7 @@ Short feedback loops give us confidence. Confidence leads to enjoyment.</p>
 
 <h4 id="setting-annotation-processing">Setting Annotation Processing</h4>
 
-<p>Line 10 is interesting because here, we are going to modify the XML.  Intellij stores its configuration in a .ipr file in the root project directory.  So line 10 says “let’s modify that .ipr file.”  The first block is where we find the node “CompilerCOnfiguration” and then modify the contents.  We have to think of in-place changes because we don’t know the original state of the ipr file.  So this block:</p>
+<p>Line 10 is interesting because here, we are going to modify the XML.  Intellij stores its project configuration in a .ipr file in the root project directory.  So line 10 says “let’s modify that .ipr file.”  The first block is where we find the node “CompilerConfiguration” and then modify the contents.  We have to think of in-place changes because we don’t know the original state of the ipr file.  So this block:</p>
 
 <figure class="highlight"><pre><code class="language-groovy" data-lang="groovy">          <span class="c1">// enable 'Annotation Processors'</span>
            <span class="n">xmlFile</span><span class="o">.</span><span class="na">asNode</span><span class="o">().</span><span class="na">component</span><span class="o">.</span><span class="na">find</span> <span class="o">{</span>
@@ -173,7 +175,7 @@ Short feedback loops give us confidence. Confidence leads to enjoyment.</p>
 
 <h4 id="setting-git-vcs-root">Setting Git VCS root</h4>
 
-<p>Intellij made this interesting “feature” where when it knows that you are using Git, it wants to know where the root of the repository is set so it can properly track changes.  Virtually every instance, it is the annoying popup in the top left where it asks you to set the VCS root.  Then when you open the dialog, it has everything set and all you have to hit is “ok”.  Well clicking buttons is annoying.  So lines 21 to 26 do this for us.  The gradle xml changes below:</p>
+<p>Intellij made this interesting “feature” where when it knows that you are using Git, it wants to know where the root of the repository is set so it can properly track changes.  In virtually every instance, it is the annoying popup in the top left where it asks you to set the VCS root.  Then when you open the dialog, it has everything set and all you have to hit is “ok”.  Well clicking buttons is annoying.  So lines 21 to 26 do this for us.  The gradle xml changes below:</p>
 
 <figure class="highlight"><pre><code class="language-groovy" data-lang="groovy">      <span class="c1">// setup Git root</span>
       <span class="n">xmlFile</span><span class="o">.</span><span class="na">asNode</span><span class="o">().</span><span class="na">component</span><span class="o">.</span><span class="na">find</span> <span class="o">{</span> <span class="n">it</span><span class="o">.</span><span class="nd">@name</span> <span class="o">==</span> <span class="s1">'VcsDirectoryMappings'</span> <span class="o">}.</span><span class="na">replaceNode</span> <span class="o">{</span>
@@ -206,6 +208,78 @@ Short feedback loops give us confidence. Confidence leads to enjoyment.</p>
 </pre></noscript>
 <script src="https://gist.github.com/a163f485c86ff4452bf8.js"> </script>
 
+<p>The first thing to note is that we are going to be modifying the ‘.iml’ file in the project.  This will allow us to modify which plugins will be active for the module.  The idea plugin will allow us to write to this with lines: 7.  The first thing that we do is get the “FacetManager” node.  This node allows us to set which plugins are active in the module.  Lines 10 through 17 are where we get the xml tag or build one.</p>
+
+<p>The code below gets the facet manager node and then if it finds it, removes the web facet from it.</p>
+
+<figure class="highlight"><pre><code class="language-groovy" data-lang="groovy"><span class="c1">// Find or define the facetManager XML node.</span>
+<span class="kt">def</span> <span class="n">facetManager</span> <span class="o">=</span> <span class="n">xmlFile</span><span class="o">.</span><span class="na">asNode</span><span class="o">().</span><span class="na">component</span><span class="o">.</span><span class="na">find</span> <span class="o">{</span> <span class="n">it</span><span class="o">.</span><span class="nd">@name</span> <span class="o">==</span> <span class="s1">'FacetManager'</span> <span class="o">}</span> <span class="k">as</span> <span class="n">Node</span>
+  <span class="k">if</span> <span class="o">(</span><span class="n">facetManager</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">Node</span> <span class="n">webFacet</span> <span class="o">=</span> <span class="n">facetManager</span><span class="o">.</span><span class="na">facet</span><span class="o">.</span><span class="na">find</span> <span class="o">{</span> <span class="n">it</span><span class="o">.</span><span class="nd">@type</span> <span class="o">==</span> <span class="s1">'web'</span> <span class="o">}</span>
+      <span class="k">if</span> <span class="o">(</span><span class="n">webFacet</span><span class="o">)</span>
+          <span class="n">facetManager</span><span class="o">.</span><span class="na">remove</span><span class="o">(</span><span class="n">webFacet</span><span class="o">)</span>
+  <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+      <span class="n">facetManager</span> <span class="o">=</span> <span class="n">xmlFile</span><span class="o">.</span><span class="na">asNode</span><span class="o">().</span><span class="na">appendNode</span><span class="o">(</span><span class="s1">'component'</span><span class="o">,</span> <span class="o">[</span><span class="nl">name:</span> <span class="s1">'FacetManager'</span><span class="o">]);</span>
+  <span class="o">}</span></code></pre></figure>
+
+<p>Next, in line 18 we are going to build our own elements so we can attach them.  Lines 20 through 28 build the nodes for spring inpsection.  Line 29 is where we attach that as a sub-element of the “FacetManager” element.</p>
+
+<figure class="highlight"><pre><code class="language-groovy" data-lang="groovy"><span class="kt">def</span> <span class="n">builder</span> <span class="o">=</span> <span class="k">new</span> <span class="n">NodeBuilder</span><span class="o">()</span>
+
+<span class="c1">// Setup Spring Wiring inspection.</span>
+<span class="kt">def</span> <span class="n">springFacet</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="na">facet</span><span class="o">(</span><span class="nl">type:</span> <span class="s1">'Spring'</span><span class="o">,</span> <span class="nl">name:</span> <span class="s1">'Spring'</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">configuration</span> <span class="o">{</span>
+        <span class="n">fileset</span><span class="o">(</span><span class="nl">id:</span> <span class="s1">'fileset'</span><span class="o">,</span> <span class="nl">name:</span> <span class="s1">'Spring Application Context'</span><span class="o">,</span>  <span class="nl">removed:</span><span class="s1">'false'</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">file</span><span class="o">(</span><span class="s1">'file://$MODULE_DIR$/src/[PATH TO SPRING BOOT APP]/[SPRING BOOT APP CLASS].java'</span><span class="o">){</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+<span class="n">facetManager</span><span class="o">.</span><span class="na">append</span> <span class="n">springFacet</span></code></pre></figure>
+
+<p>Lastly, still using the node build object, I build another xml element for Infinitest.</p>
+
+<figure class="highlight"><pre><code class="language-groovy" data-lang="groovy"><span class="c1">// Setup Infinitest integration.</span>
+<span class="kt">def</span> <span class="n">infinitestFacet</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="na">facet</span><span class="o">(</span><span class="nl">type:</span> <span class="s1">'Infinitest'</span><span class="o">,</span> <span class="nl">name:</span> <span class="s1">'Infinitest'</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">configuration</span> <span class="o">{</span> <span class="o">}</span>
+<span class="o">}</span>
+<span class="n">facetManager</span><span class="o">.</span><span class="na">append</span> <span class="n">infinitestFacet</span></code></pre></figure>
+
+<p>Both of these produces the final output of:</p>
+
+<figure class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="nt">&lt;module</span> <span class="na">relativePaths=</span><span class="s">"true"</span> <span class="na">type=</span><span class="s">"JAVA_MODULE"</span> <span class="na">version=</span><span class="s">"4"</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;component</span> <span class="na">name=</span><span class="s">"FacetManager"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;facet</span> <span class="na">type=</span><span class="s">"Spring"</span> <span class="na">name=</span><span class="s">"Spring"</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;configuration&gt;</span>
+        <span class="nt">&lt;fileset</span> <span class="na">id=</span><span class="s">"fileset"</span> <span class="na">name=</span><span class="s">"Spring Application Context"</span> <span class="na">removed=</span><span class="s">"false"</span><span class="nt">&gt;</span>
+          <span class="nt">&lt;file&gt;</span>file://$MODULE_DIR$/src/[PATH TO SPRING BOOT APP]/[SPRING BOOT APP CLASS].java<span class="nt">&lt;/file&gt;</span>
+        <span class="nt">&lt;/fileset&gt;</span>
+      <span class="nt">&lt;/configuration&gt;</span>
+    <span class="nt">&lt;/facet&gt;</span>
+    <span class="nt">&lt;facet</span> <span class="na">type=</span><span class="s">"Infinitest"</span> <span class="na">name=</span><span class="s">"Infinitest"</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;configuration</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;/facet&gt;</span>
+  <span class="nt">&lt;/component&gt;</span>
+  <span class="c">&lt;!-- ... --&gt;</span>
+<span class="nt">&lt;/module&gt;</span></code></pre></figure>
+
+<h4 id="so-how-do-you-add-your-own-plugin-configurations">So how do you add your own plugin configurations?</h4>
+
+<p>I do the following steps:</p>
+
+<ol>
+  <li>Make a copy of your iml or ipr file.</li>
+  <li>In Intellij, modify your settings to exactly what you want.</li>
+  <li>Diff the two and determine what XML elements need to be created.</li>
+  <li>Build the gradle configuration until you get exactly what you want.</li>
+</ol>
+
+<h2 id="lastly-is-it-worth-the-work">Lastly: <em>Is it worth the work?</em></h2>
+
+<p>If it’s just you, maybe not.  I tend to work with teams of 3 - 15 developers.  A good chunk of them are really great developers and many of them can get stuck trying to get things setup.  Most developers are lazy <a href="http://c2.com/cgi/wiki?ProgrammingPerl">(which isn’t always thought of as a bad thing)</a> and so making things work “auto-magically” will result in the highest rate of adoption and the lowest rate of grumbling.</p>
+
+<p>I am always open to hear your thoughts though…</p>
 
     </div><!-- /.entry-content -->
     <section id="disqus_thread"></section><!-- /#disqus_thread -->
@@ -263,7 +337,7 @@ Short feedback loops give us confidence. Confidence leads to enjoyment.</p>
 
 <div class="footer-wrapper">
   <footer role="contentinfo">
-    <span>&copy; 2015 Stephen Shary. Powered by <a href="http://jekyllrb.com" rel="nofollow">Jekyll</a> using the <a href="http://github.com/aron-bordin/neo-hpstr-jekyll-theme" rel="nofollow">Neo-HPSTR Theme</a>.</span>
+    <span>&copy; 2016 Stephen Shary. Powered by <a href="http://jekyllrb.com" rel="nofollow">Jekyll</a> using the <a href="http://github.com/aron-bordin/neo-hpstr-jekyll-theme" rel="nofollow">Neo-HPSTR Theme</a>.</span>
 
   </footer>
 </div><!-- /.footer-wrapper -->
