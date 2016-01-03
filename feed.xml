@@ -4,13 +4,92 @@
 <generator uri="https://github.com/mojombo/jekyll">Jekyll</generator>
 <link rel="self" type="application/atom+xml" href="/feed.xml" />
 <link rel="alternate" type="text/html" href="" />
-<updated>2016-01-01T20:11:00-05:00</updated>
+<updated>2016-01-03T15:32:23-05:00</updated>
 <id>/</id>
 <author>
   <name>Stephen Shary</name>
   <uri>/</uri>
   <email>stephen.shary@gmail.com`</email>
 </author>
+
+
+<entry>
+  <title type="html"><![CDATA[The Solution to the Temptation of End-To-End Tests: Integration Testing]]></title>
+ <link rel="alternate" type="text/html" href="/testing/end-to-end-testing-problem/" />
+  <id>/testing/end-to-end-testing-problem</id>
+  <updated>2016-01-03T00:00:00-00:00</updated>
+  <published>2016-01-03T00:00:00-05:00</published>
+  
+  <author>
+    <name>Stephen Shary</name>
+    <uri></uri>
+    <email>stephen.shary@gmail.com`</email>
+  </author>
+  <content type="html">
+    &lt;p&gt;The moment that you QA group figures out how to write end-to-end tests or the moment that you boss watches a selenium test, a new fever hits your team to write a test as solution to every problem.  Button the wrong color?  Write a test.  Customer got a 404?  Write a test.  Need to support IE 8?  Write a test.&lt;/p&gt;
+
+&lt;p&gt;Next thing you know your team has hundreds of tests that do bunches of things.  You also need a small super-computer cluster to run them as well.&lt;/p&gt;
+
+&lt;p&gt;The problem is that these end-to-end tests have serious inherent problems. Those problems are stablity and speed.&lt;/p&gt;
+
+&lt;p&gt;Luckily, there is a solution.  Let’s define the two problems first.&lt;/p&gt;
+
+&lt;h2 id=&quot;lack-of-test-stability-is-a-loss-of-test-confidence&quot;&gt;Lack of Test Stability is a Loss of Test Confidence&lt;/h2&gt;
+
+&lt;p&gt;Let’s talk about stability first.  I have worked on a number of projects where there is an automation test suite.  We have our unit, integration, and end-to-end test tests.  We usually have a continuous integration (CI) pipeline that will execute our tests on each check in.  Things are great for the first couple of weeks.  All steps are green and then after that we move to this:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/pile-up.jpg&quot; alt=&quot;Toy Car pile-up&quot; class=&quot;center-image&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;And the failed builds are painful.  Everything goes red and stop looking at the build.  Then your team doesn’t care.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://s2.quickmeme.com/img/cb/cbcdef26ba7abde1ff4757fec30671b923775265466a623f022efc83c2310446.jpg&quot; alt=&quot;Roses are red, violets are red, everything is red&quot; class=&quot;center-image&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Then you start hearing these conversations:&lt;/p&gt;
+
+&lt;iframe width=&quot;420&quot; height=&quot;200&quot; class=&quot;center-image&quot; src=&quot;https://www.youtube.com/embed/pKTgCZyBY4E&quot; frameborder=&quot;0&quot; allowfullscreen=&quot;&quot;&gt;&lt;/iframe&gt;
+
+&lt;p&gt;The thing is though is that we still care about the first tests: unit.  Why is that?  Well because they are stable.  We make git hooks that prevent people from pushing code to a broken build but our integration and end-to-end tests are still a total blood-bath.  Below is a graph the depicts the stability of tests along with team confidence.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/testing-stability-graph.png&quot; alt=&quot;Graph of Test Stability and Team Confidence along with Number of Tests&quot; class=&quot;center-image&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;One thing to think about.  If your test environment works 99% of the time and you have 200+ tests, then you are statistically going to fail almost every build.  The law of averages is &lt;em&gt;NOT&lt;/em&gt; on your side.  Even if you get a good build, how often will that happen?&lt;/p&gt;
+
+&lt;h4 id=&quot;solutions-to-complexity&quot;&gt;Solutions to Complexity&lt;/h4&gt;
+
+&lt;p&gt;First thought: Keep it simple.  That seems to be like a obvious solution but try to get your team to focus on integrating the peices that have the most complex interaction.  If two parts connect in one way, then how much benefit do you get putting them together.  If you have two units that interact back and forth, then integrate those together.  More is not always better.&lt;/p&gt;
+
+&lt;p&gt;Second thought: Write a stub for the flakiest part of the system.  Do you rely on that third-party processor and it works 80% of the time?   Rip out the actual interaction into a stub!  It may take a little time but it will make your tests reliable.&lt;/p&gt;
+
+&lt;p&gt;A real-world example:  I was working on a project where we have a complex front-end web application and then a complex back-end that makes calls to multiple services.  Past projects that were somewhat similar had always run into problems with the end-to-end tests where the back-end server would 500 or timeout (always randomly) and the tests would break.  So we used &lt;a href=&quot;http://sinonjs.org/&quot;&gt;sinon.js&lt;/a&gt; to fake XMLHttpRequests.  You know what?  That works 100% of the time.  No weird delays, unexpected responses.  The stubbing framework was &amp;lt; 200 lines of code and it opened us to up to write several tests on failure scenarios that are very, very difficult to recreate in a true end-to-end test.&lt;/p&gt;
+
+&lt;h2 id=&quot;lack-of-test-performance--i-dont-run-those&quot;&gt;Lack of Test Performance = “I don’t run those”&lt;/h2&gt;
+
+&lt;p&gt;Developers are impatient.  They are also easily distracted when they have to do something they don’t want to do.  So when you have tests that don’t run quickly, then people don’t run them.  One solution that I hear about the “nightly build”.  I have never worked on a team that had this, but the problem is that you delay feedback to developers.   Why!?!  I want to know as quickly as possible that I broke something.  First, I don’t want the shame of make a code change that breaks 500+ tests and then have to do the revert of shame.&lt;/p&gt;
+
+&lt;p&gt;Plus if you have the central authority run the tests, then your commit messages would look like this:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://imgs.xkcd.com/comics/git_commit.png&quot; alt=&quot;xkcd comit about git commit messages&quot; class=&quot;center-image&quot; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;so-how-do-you-make-your-tests-run-faster&quot;&gt;So how do you make your tests run faster?&lt;/h3&gt;
+
+&lt;p&gt;Well, there are a couple of things that can be done:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Choose frameworks that are made to be tested.&lt;/li&gt;
+  &lt;li&gt;Break your large number of end-to-end tests down into integration tests.&lt;/li&gt;
+  &lt;li&gt;If a framework has a long setup time, re-use your setup as much as possible.&lt;/li&gt;
+  &lt;li&gt;Run your tests in parallel.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;integration-testing&quot;&gt;Integration Testing&lt;/h2&gt;
+
+&lt;p&gt;Integration tests are interesting because we put together two or more units and verify that their effect and response is correct.  An integration test may have more than one side-effect.  If you have a user creation controller and a user service, when we test user creation, we send back to the user what their user name is with the controller but we will also verify that the service persists the user details.&lt;/p&gt;
+
+&lt;p&gt;Not everything can be integrated and tested.  Look for frameworks that let you do this.  I like AngularJS with their directives and new component architecture.  I also love Spring.  You can wire up all sorts of &lt;a href=&quot;http://docs.spring.io/spring/docs/current/spring-framework-reference/html/integration-testing.html&quot;&gt;crazy configurations that let you test the interaction of beans.&lt;/a&gt;  Databases now have &lt;a href=&quot;http://dbunit.sourceforge.net/&quot;&gt;DbUnit&lt;/a&gt; and Cassandra has &lt;a href=&quot;https://github.com/jsevellec/cassandra-unit&quot;&gt;CassandraUnit&lt;/a&gt;.&lt;/p&gt;
+
+    &lt;p&gt;&lt;a href=&quot;/testing/end-to-end-testing-problem/&quot;&gt;The Solution to the Temptation of End-To-End Tests: Integration Testing&lt;/a&gt; was originally published by Stephen Shary at &lt;a href=&quot;&quot;&gt;STeve Smash Code&lt;/a&gt; on January 03, 2016.&lt;/p&gt;
+  </content>
+</entry>
 
 
 <entry>

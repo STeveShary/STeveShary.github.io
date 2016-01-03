@@ -1,6 +1,14 @@
 [
   
     {
+      "title"    : "The Solution to the Temptation of End-To-End Tests: Integration Testing",
+      "category" : "",
+      "tags"     : "Testing unit integration end-to-end",
+      "url"      : "/testing/end-to-end-testing-problem/",
+      "date"     : "2016-01-03 00:00:00 -0500"
+    } ,
+  
+    {
       "title"    : "Customize Gradle to setup Intellij",
       "category" : "",
       "tags"     : "Intellij Gradle",

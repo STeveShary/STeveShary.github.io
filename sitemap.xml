@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>/testing/end-to-end-testing-problem/</loc>
+    <lastmod>2016-01-03T00:00:00-05:00</lastmod>
+  </url>
+  <url>
     <loc>/developer%20setup/Gradle-Intellij-Setup/</loc>
     <lastmod>2015-12-24T00:00:00-05:00</lastmod>
   </url>
@@ -37,5 +41,8 @@
     </url>
     <url>
       <loc>/developer%20setup/Gradle-Intellij-Setup/</loc>
+    </url>
+    <url>
+      <loc>/testing/end-to-end-testing-problem/</loc>
     </url>
 </urlset>
