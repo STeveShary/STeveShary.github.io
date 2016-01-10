@@ -115,7 +115,7 @@
       <span class="entry-reading-time">
         <i class="fa fa-clock-o"></i>
         
-        Reading time ~4 minutes
+        Reading time ~5 minutes
       </span><!-- /.entry-reading-time -->
       
     </div><!-- /.entry-meta -->
@@ -129,7 +129,7 @@
 
 <p>Next thing you know your team has hundreds of tests that do bunches of things.  You also need a small super-computer cluster to run them as well.</p>
 
-<p>The problem is that these end-to-end tests have serious inherent problems. Those problems are stablity and speed.</p>
+<p>The problem is that these end-to-end tests have serious inherent problems. Those problems with end-to-end tests are stability and speed.</p>
 
 <p>Luckily, there is a solution.  Let’s define the two problems first.</p>
 
@@ -155,7 +155,7 @@
 
 <h4 id="solutions-to-complexity">Solutions to Complexity</h4>
 
-<p>First thought: Keep it simple.  That seems to be like a obvious solution but try to get your team to focus on integrating the peices that have the most complex interaction.  If two parts connect in one way, then how much benefit do you get putting them together.  If you have two units that interact back and forth, then integrate those together.  More is not always better.</p>
+<p>First thought: Keep it simple.  That seems to be like a obvious solution but try to get your team to focus on integrating the pieces that have the most complex interaction.  If two parts connect in one way, then how much benefit do you get putting them together.  If you have two units that interact back and forth, then integrate those together.  More is not always better.</p>
 
 <p>Second thought: Write a stub for the flakiest part of the system.  Do you rely on that third-party processor and it works 80% of the time?   Rip out the actual interaction into a stub!  It may take a little time but it will make your tests reliable.</p>
 
@@ -185,6 +185,12 @@
 <p>Integration tests are interesting because we put together two or more units and verify that their effect and response is correct.  An integration test may have more than one side-effect.  If you have a user creation controller and a user service, when we test user creation, we send back to the user what their user name is with the controller but we will also verify that the service persists the user details.</p>
 
 <p>Not everything can be integrated and tested.  Look for frameworks that let you do this.  I like AngularJS with their directives and new component architecture.  I also love Spring.  You can wire up all sorts of <a href="http://docs.spring.io/spring/docs/current/spring-framework-reference/html/integration-testing.html">crazy configurations that let you test the interaction of beans.</a>  Databases now have <a href="http://dbunit.sourceforge.net/">DbUnit</a> and Cassandra has <a href="https://github.com/jsevellec/cassandra-unit">CassandraUnit</a>.</p>
+
+<p>Integration tests are very unassuming.  They seem like they are more complicated versions of unit tests.  Plus, they don’t test the application end-to-end!   But, they are fast and stable.  When I say fast, I think less than 100ms.  An integration tests mocks out the dependencies on the end.  This allows the points of instability to become very very stable.</p>
+
+<p>Lastly, integration tests let you build interesting scenarios.  Are you worried about a race condition?  You can build artificial dependencies that get injected into your integration test to verify how your system will perform.  Want to know what happens when the system throws an exception on adding and item to the basket?  No problem.  Want to make sure that your message processor handles a rare out-of-order scenario?  Not difficult.</p>
+
+<p>It’s not the silver bullet, but when used with some end-to-end tests and a bedrock of unit tests; it helps tremendously.</p>
 
     
   </div><!-- /.entry-content -->

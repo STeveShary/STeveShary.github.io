@@ -4,7 +4,7 @@
 <generator uri="https://github.com/mojombo/jekyll">Jekyll</generator>
 <link rel="self" type="application/atom+xml" href="/feed.xml" />
 <link rel="alternate" type="text/html" href="" />
-<updated>2016-01-04T20:16:59-05:00</updated>
+<updated>2016-01-10T11:02:17-05:00</updated>
 <id>/</id>
 <author>
   <name>Stephen Shary</name>
@@ -30,7 +30,7 @@
 
 &lt;p&gt;Next thing you know your team has hundreds of tests that do bunches of things.  You also need a small super-computer cluster to run them as well.&lt;/p&gt;
 
-&lt;p&gt;The problem is that these end-to-end tests have serious inherent problems. Those problems are stablity and speed.&lt;/p&gt;
+&lt;p&gt;The problem is that these end-to-end tests have serious inherent problems. Those problems with end-to-end tests are stability and speed.&lt;/p&gt;
 
 &lt;p&gt;Luckily, there is a solution.  Let’s define the two problems first.&lt;/p&gt;
 
@@ -56,7 +56,7 @@
 
 &lt;h4 id=&quot;solutions-to-complexity&quot;&gt;Solutions to Complexity&lt;/h4&gt;
 
-&lt;p&gt;First thought: Keep it simple.  That seems to be like a obvious solution but try to get your team to focus on integrating the peices that have the most complex interaction.  If two parts connect in one way, then how much benefit do you get putting them together.  If you have two units that interact back and forth, then integrate those together.  More is not always better.&lt;/p&gt;
+&lt;p&gt;First thought: Keep it simple.  That seems to be like a obvious solution but try to get your team to focus on integrating the pieces that have the most complex interaction.  If two parts connect in one way, then how much benefit do you get putting them together.  If you have two units that interact back and forth, then integrate those together.  More is not always better.&lt;/p&gt;
 
 &lt;p&gt;Second thought: Write a stub for the flakiest part of the system.  Do you rely on that third-party processor and it works 80% of the time?   Rip out the actual interaction into a stub!  It may take a little time but it will make your tests reliable.&lt;/p&gt;
 
@@ -86,6 +86,12 @@
 &lt;p&gt;Integration tests are interesting because we put together two or more units and verify that their effect and response is correct.  An integration test may have more than one side-effect.  If you have a user creation controller and a user service, when we test user creation, we send back to the user what their user name is with the controller but we will also verify that the service persists the user details.&lt;/p&gt;
 
 &lt;p&gt;Not everything can be integrated and tested.  Look for frameworks that let you do this.  I like AngularJS with their directives and new component architecture.  I also love Spring.  You can wire up all sorts of &lt;a href=&quot;http://docs.spring.io/spring/docs/current/spring-framework-reference/html/integration-testing.html&quot;&gt;crazy configurations that let you test the interaction of beans.&lt;/a&gt;  Databases now have &lt;a href=&quot;http://dbunit.sourceforge.net/&quot;&gt;DbUnit&lt;/a&gt; and Cassandra has &lt;a href=&quot;https://github.com/jsevellec/cassandra-unit&quot;&gt;CassandraUnit&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Integration tests are very unassuming.  They seem like they are more complicated versions of unit tests.  Plus, they don’t test the application end-to-end!   But, they are fast and stable.  When I say fast, I think less than 100ms.  An integration tests mocks out the dependencies on the end.  This allows the points of instability to become very very stable.&lt;/p&gt;
+
+&lt;p&gt;Lastly, integration tests let you build interesting scenarios.  Are you worried about a race condition?  You can build artificial dependencies that get injected into your integration test to verify how your system will perform.  Want to know what happens when the system throws an exception on adding and item to the basket?  No problem.  Want to make sure that your message processor handles a rare out-of-order scenario?  Not difficult.&lt;/p&gt;
+
+&lt;p&gt;It’s not the silver bullet, but when used with some end-to-end tests and a bedrock of unit tests; it helps tremendously.&lt;/p&gt;
 
     &lt;p&gt;&lt;a href=&quot;/testing/end-to-end-testing-problem/&quot;&gt;The Solution to the Temptation of End-To-End Tests: Integration Testing&lt;/a&gt; was originally published by Stephen Shary at &lt;a href=&quot;&quot;&gt;STeve Smash Code&lt;/a&gt; on January 03, 2016.&lt;/p&gt;
   </content>
