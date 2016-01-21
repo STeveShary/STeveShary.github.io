@@ -4,13 +4,62 @@
 <generator uri="https://github.com/mojombo/jekyll">Jekyll</generator>
 <link rel="self" type="application/atom+xml" href="/feed.xml" />
 <link rel="alternate" type="text/html" href="" />
-<updated>2016-01-10T11:02:17-05:00</updated>
+<updated>2016-01-20T22:35:22-05:00</updated>
 <id>/</id>
 <author>
   <name>Stephen Shary</name>
   <uri>/</uri>
   <email>stephen.shary@gmail.com`</email>
 </author>
+
+
+<entry>
+  <title type="html"><![CDATA[How to Setup Elastic Search in Docker Containers]]></title>
+ <link rel="alternate" type="text/html" href="/devops/Elastic-Search-in-Docker/" />
+  <id>/devops/Elastic-Search-in-Docker</id>
+  <updated>2016-01-18T00:00:00-00:00</updated>
+  <published>2016-01-18T00:00:00-05:00</published>
+  
+  <author>
+    <name>Stephen Shary</name>
+    <uri></uri>
+    <email>stephen.shary@gmail.com`</email>
+  </author>
+  <content type="html">
+    &lt;h2 id=&quot;elastic-search-and-docker&quot;&gt;Elastic Search and Docker&lt;/h2&gt;
+
+&lt;p&gt;Elastic Search is great!  Docker is great!  Let’s use both of them together!  Ok, seriously.  I am working on project that is using a fairly large Elastic Search (ES) cluster.  More than just a toy example.  So we have nodes that run on different machines in different racks and in different datacenters.  So the examples (&lt;a href=&quot;http://elk-docker.readthedocs.org/#elasticsearch-cluster-different-hosts&quot;&gt;here&lt;/a&gt;, &lt;a href=&quot;https://clusterhq.com/2014/10/14/deploying-multi-node-elasticsearch-logstash-kibana-cluster-using-docker/&quot;&gt;here&lt;/a&gt;, &lt;a href=&quot;https://github.com/deviantony/docker-elk&quot;&gt;here&lt;/a&gt;, and &lt;a href=&quot;http://technologyconversations.com/2015/05/18/centralized-system-and-docker-logging-with-elk-stack/&quot;&gt;here&lt;/a&gt;) talk about some really great stuff but I couldn’t get them to really work with separate ES nodes. Maybe too, you are running in the cloud and have &lt;a href=&quot;https://www.elastic.co/guide/en/elasticsearch/plugins/2.1/discovery.html&quot;&gt;a nice plugin to use for your cloud provider&lt;/a&gt;.  Ok, I don’t have that.&lt;/p&gt;
+
+&lt;h4 id=&quot;the-problem&quot;&gt;The problem.&lt;/h4&gt;
+
+&lt;p&gt;Well, it lies in the fact that docker networking hides the containers from the networking stack on the host machine.  The problem is that when you start elastic search, you have to host addresses:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;The bind host&lt;/li&gt;
+  &lt;li&gt;The publish host&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;The bind host is where we declare where we want the process to serve from.   This allows us to define which network interface(s) we want to use.  It is the basic requirement for a server process to listen to tcp traffic.&lt;/p&gt;
+
+&lt;p&gt;The publish host is like the “return address”.  When we use the zen discovery with ES, we have to tell the other nodes how to talk to our node.  They have important things to tell us and two-way communication is good.&lt;/p&gt;
+
+&lt;p&gt;The problem that arrises is that most of the documentation points to this nice parameter &lt;code class=&quot;highlighter-rouge&quot;&gt;network.host&lt;/code&gt; (&lt;a href=&quot;https://www.elastic.co/guide/en/elasticsearch/reference/2.x/modules-network.html&quot;&gt;yep, the first parameter in the network documentation&lt;/a&gt;).  The “cool” (or not) feature of this parameter is that it will set both the bind and publish host for you (&lt;a href=&quot;https://www.elastic.co/guide/en/elasticsearch/reference/2.x/modules-network.html&quot;&gt;source&lt;/a&gt;)  And it has an even nicer thing where you can set it to &lt;code class=&quot;highlighter-rouge&quot;&gt;0.0.0.0&lt;/code&gt; which tells ES, “hey, choose a non-loop back interface and just use that!”   This shows up in the &lt;a href=&quot;https://github.com/docker-library/elasticsearch/blob/a3f8e658da60bf58e97e18a78d85815a896f9eed/2.1/config/elasticsearch.yml&quot;&gt;configuration for the official ES docker container!&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;Thhe problem hits us when we realize that the IP address in the docker container is not the same IP address that other processes outside of the server can see.  Now, there is the GIANT HAMMER solve this.
+You can add the parameter &lt;code class=&quot;highlighter-rouge&quot;&gt;--net=&quot;host&quot;&lt;/code&gt;  to your docker run command, but that is generally a bad idea (see &lt;a href=&quot;http://www.dasblinkenlichten.com/docker-networking-101-host-mode/&quot;&gt;here&lt;/a&gt;, and &lt;a href=&quot;https://github.com/jedisct1/dnscrypt-server-docker/issues/13&quot;&gt;here&lt;/a&gt;).&lt;/p&gt;
+
+&lt;p&gt;So it took me some time to realize that I want to set my bind host to the “fancy pants” &lt;code class=&quot;highlighter-rouge&quot;&gt;0.0.0.0&lt;/code&gt; and then set my publish host to the hostname of the host (or the IP address of my host). Since my docker container doesn’t know much of anything about the host, I have to tell it what is the external host.  I do this as part of my docker run command; I add an environment variable &lt;code class=&quot;highlighter-rouge&quot;&gt;--env &quot;PUBLISH_IP=10.0.0.1&quot;&lt;/code&gt;.  Then in my elasticsearch.yml, you have to set the following:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-yaml&quot; data-lang=&quot;yaml&quot;&gt;&lt;span class=&quot;s&quot;&gt;network.bind_host&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;0.0.0.0&lt;/span&gt;
+&lt;span class=&quot;s&quot;&gt;network.publish_host&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;${PUBLISH_IP}&quot;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Adding these two lines will allow you to have your ES containers talk to each other properly.  Man, it feels kinda anticlimatic to have a solution that is so small.&lt;/p&gt;
+
+&lt;p&gt;Nothing big, but I hope you found this before too much hassle.&lt;/p&gt;
+
+    &lt;p&gt;&lt;a href=&quot;/devops/Elastic-Search-in-Docker/&quot;&gt;How to Setup Elastic Search in Docker Containers&lt;/a&gt; was originally published by Stephen Shary at &lt;a href=&quot;&quot;&gt;STeve Smash Code&lt;/a&gt; on January 18, 2016.&lt;/p&gt;
+  </content>
+</entry>
 
 
 <entry>

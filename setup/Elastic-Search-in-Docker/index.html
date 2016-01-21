@@ -5,25 +5,25 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en"><!--<![endif]-->
 <head>
 <meta charset="utf-8">
-<title>Intellij and Gradle Setup and Integration &#8211; STeve Smash Code</title>
-<meta name="description" content="There are a couple of ways to integrate the Intellij project setup and Gradle setup.">
-<meta name="keywords" content="Intellij Gradle">
+<title>How to Setup Elastic Search in Docker Containers &#8211; STeve Smash Code</title>
+<meta name="description" content="Handling the zen discovery with docker containers">
+<meta name="keywords" content="Docker Elastic-Search">
 
 
 
 <!-- Open Graph -->
 <meta property="og:locale" content="en_US">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Intellij and Gradle Setup and Integration">
-<meta property="og:description" content="There are a couple of ways to integrate the Intellij project setup and Gradle setup.">
-<meta property="og:url" content="/developer%20setup/Gradle-Intellij/">
+<meta property="og:title" content="How to Setup Elastic Search in Docker Containers">
+<meta property="og:description" content="Handling the zen discovery with docker containers">
+<meta property="og:url" content="/setup/Elastic-Search-in-Docker/">
 <meta property="og:site_name" content="STeve Smash Code">
 
 
 
 
 
-<link rel="canonical" href="/developer%20setup/Gradle-Intellij/">
+<link rel="canonical" href="/setup/Elastic-Search-in-Docker/">
 <link href="/feed.xml" type="application/atom+xml" rel="alternate" title="STeve Smash Code Feed">
 
 <!-- http://t.co/dKP3o1e -->
@@ -108,7 +108,7 @@
   <article class="hentry">
     <div class="entry-content">
       <div class="entry-meta">
-        <span class="entry-date date published updated"><time datetime="2015-12-22T00:00:00-05:00"><a href="">December 22, 2015</a></time></span>
+        <span class="entry-date date published updated"><time datetime="2016-01-18T00:00:00-05:00"><a href="">January 18, 2016</a></time></span>
         </span>
         
         <span class="entry-reading-time">
@@ -118,86 +118,61 @@
         </span><!-- /.entry-reading-time -->
         
       </div><!-- /.entry-meta -->
-      <h1 class="post-title entry-title">Intellij and Gradle Setup and Integration</h1>
+      <h1 class="post-title entry-title">How to Setup Elastic Search in Docker Containers</h1>
 
-      <p>There are two main ways to setup your project in Intellij when using gradle as your build tool for a java project:</p>
+      <h2 id="elastic-search-and-docker">Elastic Search and Docker</h2>
 
-<ul>
-  <li>Import your gradle project using Intellij.</li>
-  <li>Build your Intellij project using the Gradle idea plugin</li>
-</ul>
+<p>Elastic Search is great!  Docker is great!  Let’s use both of them together!  Ok, seriously.  I am working on project that is using a fairly large Elastic Search (ES) cluster.  More than just a toy example.  So we have nodes that run on different machines in different racks and in different datacenters.  So the examples (<a href="http://elk-docker.readthedocs.org/#elasticsearch-cluster-different-hosts">here</a>, <a href="https://clusterhq.com/2014/10/14/deploying-multi-node-elasticsearch-logstash-kibana-cluster-using-docker/">here</a>, <a href="https://github.com/deviantony/docker-elk">here</a>, and <a href="http://technologyconversations.com/2015/05/18/centralized-system-and-docker-logging-with-elk-stack/">here</a>) talk about some really great stuff but I couldn’t get them to really work with separate ES nodes. Maybe too, you are running in the cloud and have <a href="https://www.elastic.co/guide/en/elasticsearch/plugins/2.1/discovery.html">a nice plugin to use for your cloud provider</a>.  Ok, I don’t have that.</p>
 
-<p>Here, I’ll discuss the three approaches and the pros and cons.  The end will talk about I do in the projects that I work on.</p>
+<h4 id="the-problem">The problem.</h4>
 
-<h2 id="import-your-gradle-project-using-intellij">Import your Gradle project Using Intellij</h2>
-
-<p>Intellij has two big nice features:  “ability to import projects from the existing Gradle models. So doing, IntelliJ IDEA downloads all the necessary dependencies” and “ability to synchronize structures of Gradle and IntelliJ IDEA projects.”  In practice, this is where you open a project by selecting the “build.gradle” file in your project and the Intellij wizard(ry) does the rest.</p>
-
-<p>Pros:</p>
+<p>Well, it lies in the fact that docker networking hides the containers from the networking stack on the host machine.  The problem is that when you start elastic search, you have to host addresses:</p>
 
 <ul>
-  <li>Very simple.</li>
-  <li>Changes are synchronized.  As you change your <code class="highlighter-rouge">build.gradle</code> file, Intellij will automatically pull the dependency down and add it to your build path.  Make sure that you select the check box as seen below for this feature.</li>
+  <li>The bind host</li>
+  <li>The publish host</li>
 </ul>
 
-<p><img src="images/gradle-import.png" alt="Gradle import window in Intellij" class="center-image" /></p>
+<p>The bind host is where we declare where we want the process to serve from.   This allows us to define which network interface(s) we want to use.  It is the basic requirement for a server process to listen to tcp traffic.</p>
 
-<p>Cons:</p>
+<p>The publish host is like the “return address”.  When we use the zen discovery with ES, we have to tell the other nodes how to talk to our node.  They have important things to tell us and two-way communication is good.</p>
 
-<ul>
-  <li>Intellij doesn’t import all of your settings.  Specifically, if there are plugin configurations for your project that you use with your <a href="https://docs.gradle.org/current/userguide/idea_plugin.html">idea plugin settings</a></li>
-</ul>
+<p>The problem that arrises is that most of the documentation points to this nice parameter <code class="highlighter-rouge">network.host</code> (<a href="https://www.elastic.co/guide/en/elasticsearch/reference/2.x/modules-network.html">yep, the first parameter in the network documentation</a>).  The “cool” (or not) feature of this parameter is that it will set both the bind and publish host for you (<a href="https://www.elastic.co/guide/en/elasticsearch/reference/2.x/modules-network.html">source</a>)  And it has an even nicer thing where you can set it to <code class="highlighter-rouge">0.0.0.0</code> which tells ES, “hey, choose a non-loop back interface and just use that!”   This shows up in the <a href="https://github.com/docker-library/elasticsearch/blob/a3f8e658da60bf58e97e18a78d85815a896f9eed/2.1/config/elasticsearch.yml">configuration for the official ES docker container!</a></p>
 
-<p><em>NOTE:</em>  JetBrains recommends that if you want to share your project settings on your team, that you should “.idea project configuration directory should be shared via version control.” <a href="https://www.jetbrains.com/idea/help/synchronizing-and-sharing-settings.html#d1421736e270">Source</a> <a href="https://intellij-support.jetbrains.com/hc/en-us/articles/206827587-How-to-manage-projects-under-Version-Control-Systems">and here</a> but it contains a number of “guidelines” of things that you should not include because they “contain keystore passwords”, “conflicts if another developer has the same name”.  I have also found when a project has these files checked in ( incorrectly albeit ), that every commit will inevitably contain some .iws change.</p>
+<p>Thhe problem hits us when we realize that the IP address in the docker container is not the same IP address that other processes outside of the server can see.  Now, there is the GIANT HAMMER solve this.
+You can add the parameter <code class="highlighter-rouge">--net="host"</code>  to your docker run command, but that is generally a bad idea (see <a href="http://www.dasblinkenlichten.com/docker-networking-101-host-mode/">here</a>, and <a href="https://github.com/jedisct1/dnscrypt-server-docker/issues/13">here</a>).</p>
 
-<h2 id="build-your-intellij-project-using-the-gradle-idea-plugin">Build your Intellij project using the Gradle idea plugin</h2>
+<p>So it took me some time to realize that I want to set my bind host to the “fancy pants” <code class="highlighter-rouge">0.0.0.0</code> and then set my publish host to the hostname of the host (or the IP address of my host). Since my docker container doesn’t know much of anything about the host, I have to tell it what is the external host.  I do this as part of my docker run command; I add an environment variable <code class="highlighter-rouge">--env "PUBLISH_IP=10.0.0.1"</code>.  Then in my elasticsearch.yml, you have to set the following:</p>
 
-<p>Gradle has an <em>idea</em> plugin that allows you to build your Intellij project files.  You just need to include the line:</p>
+<figure class="highlight"><pre><code class="language-yaml" data-lang="yaml"><span class="s">network.bind_host</span><span class="pi">:</span> <span class="s">0.0.0.0</span>
+<span class="s">network.publish_host</span><span class="pi">:</span> <span class="s2">"</span><span class="s">${PUBLISH_IP}"</span></code></pre></figure>
 
-<figure class="highlight"><pre><code class="language-groovy" data-lang="groovy"><span class="n">apply</span> <span class="nl">plugin:</span> <span class="s1">'idea'</span></code></pre></figure>
+<p>Adding these two lines will allow you to have your ES containers talk to each other properly.  Man, it feels kinda anticlimatic to have a solution that is so small.</p>
 
-<p>and when you run the command <code class="highlighter-rouge">gradlew idea</code> it will download your dependencies and setup your project.</p>
-
-<p>Pros:</p>
-
-<ul>
-  <li>Very simple to setup dependencies.</li>
-  <li>You can customize project settings including your Version Control, JDK Version, and other plugin settings.</li>
-</ul>
-
-<p>Cons:</p>
-
-<ul>
-  <li>Changes are not automatically synchronized.  You need to run <code class="highlighter-rouge">gradlew idea</code> to rebuild your dependencies.</li>
-  <li>Making custom changes are not simple.  Most of them involve XML manipulation using groovy.</li>
-</ul>
-
-<h2 id="so-what-did-i-choose">So What Did I Choose?</h2>
-
-<p>I chose to use the second option.  I found that even if the setup is harder, it’s worth it to automatically configure more parts of the development environment.  We have strong developers that spend the time to get their environment just right.  But, there are equally more people that will work with less optimal systems because they are unsure how to get it working.</p>
+<p>Nothing big, but I hope you found this before too much hassle.</p>
 
     </div><!-- /.entry-content -->
     <section id="disqus_thread"></section><!-- /#disqus_thread -->
     <div class="read-more">
   
     <div class="read-more-header">
-      <a href="" class="read-more-btn">Read More</a>
+      <a href="/testing/end-to-end-testing-problem/" class="read-more-btn">Read More</a>
     </div><!-- /.read-more-header -->
     <div class="read-more-content">
-      <h3><a href="/devops/Elastic-Search-in-Docker/" title="How to Setup Elastic Search in Docker Containers">How to Setup Elastic Search in Docker Containers</a></h3>
-      <p>Handling the zen discovery with docker containers <a href="/devops/Elastic-Search-in-Docker/">Continue reading</a></p>
+      <h3><a href="/testing/end-to-end-testing-problem/" title="The Solution to the Temptation of End-To-End Tests: Integration Testing">The Solution to the Temptation of End-To-End Tests: Integration Testing</a></h3>
+      <p>Thoughts on why end-to-end tests can destroy a project. <a href="/testing/end-to-end-testing-problem/">Continue reading</a></p>
     </div><!-- /.read-more-content -->
   
   <div class="read-more-list">
     
       <div class="list-item">
-        <h4><a href="/testing/end-to-end-testing-problem/" title="The Solution to the Temptation of End-To-End Tests: Integration Testing">The Solution to the Temptation of End-To-End Tests: Integration Testing</a></h4>
-        <span>Published on January 03, 2016</span>
+        <h4><a href="/developer%20setup/Gradle-Intellij-Setup/" title="Customize Gradle to setup Intellij">Customize Gradle to setup Intellij</a></h4>
+        <span>Published on December 24, 2015</span>
       </div><!-- /.list-item -->
     
       <div class="list-item">
-        <h4><a href="/developer%20setup/Gradle-Intellij-Setup/" title="Customize Gradle to setup Intellij">Customize Gradle to setup Intellij</a></h4>
-        <span>Published on December 24, 2015</span>
+        <h4><a href="/developer%20setup/Gradle-Intellij/" title="Intellij and Gradle Setup and Integration">Intellij and Gradle Setup and Integration</a></h4>
+        <span>Published on December 22, 2015</span>
       </div><!-- /.list-item -->
     
   </div><!-- /.read-more-list -->

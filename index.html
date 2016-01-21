@@ -110,6 +110,60 @@
   <header>
     
     <div class="entry-meta">
+      <span class="entry-date date published updated"><time datetime="2016-01-18T00:00:00-05:00"><a href="/devops/Elastic-Search-in-Docker/">January 18, 2016</a></time></span><span class="author vcard"><span class="fn"><a href="/about/" title="About Stephen Shary">Stephen Shary</a></span></span>
+      
+      <span class="entry-reading-time">
+        <i class="fa fa-clock-o"></i>
+        
+        Reading time ~2 minutes
+      </span><!-- /.entry-reading-time -->
+      
+    </div><!-- /.entry-meta -->
+    
+      <h1 class="entry-title"><a href="/devops/Elastic-Search-in-Docker/" rel="bookmark" title="How to Setup Elastic Search in Docker Containers" itemprop="url">How to Setup Elastic Search in Docker Containers</a></h1>
+    
+  </header>
+  <div class="entry-content">
+    
+      <h2 id="elastic-search-and-docker">Elastic Search and Docker</h2>
+
+<p>Elastic Search is great!  Docker is great!  Let’s use both of them together!  Ok, seriously.  I am working on project that is using a fairly large Elastic Search (ES) cluster.  More than just a toy example.  So we have nodes that run on different machines in different racks and in different datacenters.  So the examples (<a href="http://elk-docker.readthedocs.org/#elasticsearch-cluster-different-hosts">here</a>, <a href="https://clusterhq.com/2014/10/14/deploying-multi-node-elasticsearch-logstash-kibana-cluster-using-docker/">here</a>, <a href="https://github.com/deviantony/docker-elk">here</a>, and <a href="http://technologyconversations.com/2015/05/18/centralized-system-and-docker-logging-with-elk-stack/">here</a>) talk about some really great stuff but I couldn’t get them to really work with separate ES nodes. Maybe too, you are running in the cloud and have <a href="https://www.elastic.co/guide/en/elasticsearch/plugins/2.1/discovery.html">a nice plugin to use for your cloud provider</a>.  Ok, I don’t have that.</p>
+
+<h4 id="the-problem">The problem.</h4>
+
+<p>Well, it lies in the fact that docker networking hides the containers from the networking stack on the host machine.  The problem is that when you start elastic search, you have to host addresses:</p>
+
+<ul>
+  <li>The bind host</li>
+  <li>The publish host</li>
+</ul>
+
+<p>The bind host is where we declare where we want the process to serve from.   This allows us to define which network interface(s) we want to use.  It is the basic requirement for a server process to listen to tcp traffic.</p>
+
+<p>The publish host is like the “return address”.  When we use the zen discovery with ES, we have to tell the other nodes how to talk to our node.  They have important things to tell us and two-way communication is good.</p>
+
+<p>The problem that arrises is that most of the documentation points to this nice parameter <code class="highlighter-rouge">network.host</code> (<a href="https://www.elastic.co/guide/en/elasticsearch/reference/2.x/modules-network.html">yep, the first parameter in the network documentation</a>).  The “cool” (or not) feature of this parameter is that it will set both the bind and publish host for you (<a href="https://www.elastic.co/guide/en/elasticsearch/reference/2.x/modules-network.html">source</a>)  And it has an even nicer thing where you can set it to <code class="highlighter-rouge">0.0.0.0</code> which tells ES, “hey, choose a non-loop back interface and just use that!”   This shows up in the <a href="https://github.com/docker-library/elasticsearch/blob/a3f8e658da60bf58e97e18a78d85815a896f9eed/2.1/config/elasticsearch.yml">configuration for the official ES docker container!</a></p>
+
+<p>Thhe problem hits us when we realize that the IP address in the docker container is not the same IP address that other processes outside of the server can see.  Now, there is the GIANT HAMMER solve this.
+You can add the parameter <code class="highlighter-rouge">--net="host"</code>  to your docker run command, but that is generally a bad idea (see <a href="http://www.dasblinkenlichten.com/docker-networking-101-host-mode/">here</a>, and <a href="https://github.com/jedisct1/dnscrypt-server-docker/issues/13">here</a>).</p>
+
+<p>So it took me some time to realize that I want to set my bind host to the “fancy pants” <code class="highlighter-rouge">0.0.0.0</code> and then set my publish host to the hostname of the host (or the IP address of my host). Since my docker container doesn’t know much of anything about the host, I have to tell it what is the external host.  I do this as part of my docker run command; I add an environment variable <code class="highlighter-rouge">--env "PUBLISH_IP=10.0.0.1"</code>.  Then in my elasticsearch.yml, you have to set the following:</p>
+
+<figure class="highlight"><pre><code class="language-yaml" data-lang="yaml"><span class="s">network.bind_host</span><span class="pi">:</span> <span class="s">0.0.0.0</span>
+<span class="s">network.publish_host</span><span class="pi">:</span> <span class="s2">"</span><span class="s">${PUBLISH_IP}"</span></code></pre></figure>
+
+<p>Adding these two lines will allow you to have your ES containers talk to each other properly.  Man, it feels kinda anticlimatic to have a solution that is so small.</p>
+
+<p>Nothing big, but I hope you found this before too much hassle.</p>
+
+    
+  </div><!-- /.entry-content -->
+</article><!-- /.hentry -->
+
+<article class="hentry">
+  <header>
+    
+    <div class="entry-meta">
       <span class="entry-date date published updated"><time datetime="2016-01-03T00:00:00-05:00"><a href="/testing/end-to-end-testing-problem/">January 03, 2016</a></time></span><span class="author vcard"><span class="fn"><a href="/about/" title="About Stephen Shary">Stephen Shary</a></span></span>
       
       <span class="entry-reading-time">
