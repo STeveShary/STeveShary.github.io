@@ -139,9 +139,7 @@ Short feedback loops give us confidence. Confidence leads to enjoyment.</p>
 
 <p>Below is an example idea configuration used in my base <code class="highlighter-rouge">build.gradle</code> file in the project.  I’ll go into detail on what each of the different sections mean.</p>
 
-<noscript><pre>400: Invalid request
-</pre></noscript>
-<script src="https://gist.github.com/9a2fa5246c3dfbf04943.js"> </script>
+<p>true<script src="https://gist.github.com/9a2fa5246c3dfbf04943.js"> </script></p>
 
 <p>Looking at lines 7 and 8, there are two basic settings that can be set: the JDK level and the version control system.  These are basic options in the <a href="https://docs.gradle.org/current/dsl/org.gradle.plugins.ide.idea.model.IdeaProject.html">idea plugin Source</a>  Being documented and pretty straight-forward, it’s not hard to understand what these do.  Let’s move the crazier part.</p>
 
@@ -204,9 +202,7 @@ Short feedback loops give us confidence. Confidence leads to enjoyment.</p>
 
 <p>As before, below is the gist of the project changes.  We’ll go into details about what each line is.</p>
 
-<noscript><pre>400: Invalid request
-</pre></noscript>
-<script src="https://gist.github.com/a163f485c86ff4452bf8.js"> </script>
+<p>true<script src="https://gist.github.com/a163f485c86ff4452bf8.js"> </script></p>
 
 <p>The first thing to note is that we are going to be modifying the ‘.iml’ file in the project.  This will allow us to modify which plugins will be active for the module.  The idea plugin will allow us to write to this with lines: 7.  The first thing that we do is get the “FacetManager” node.  This node allows us to set which plugins are active in the module.  Lines 10 through 17 are where we get the xml tag or build one.</p>
 
@@ -289,20 +285,20 @@ Short feedback loops give us confidence. Confidence leads to enjoyment.</p>
       <a href="/developer%20setup/Gradle-Intellij/" class="read-more-btn">Read More</a>
     </div><!-- /.read-more-header -->
     <div class="read-more-content">
-      <h3><a href="/devops/Elastic-Search-in-Docker/" title="How to Setup Elastic Search in Docker Containers">How to Setup Elastic Search in Docker Containers</a></h3>
-      <p>Handling the zen discovery with docker containers <a href="/devops/Elastic-Search-in-Docker/">Continue reading</a></p>
+      <h3><a href="/testing/Choose-Testable-Frameworks/" title="Why choose that framework?  It's testability">Why choose that framework?  It's testability</a></h3>
+      <p>What it means to have a testable framework. <a href="/testing/Choose-Testable-Frameworks/">Continue reading</a></p>
     </div><!-- /.read-more-content -->
   
   <div class="read-more-list">
     
       <div class="list-item">
-        <h4><a href="/testing/end-to-end-testing-problem/" title="The Solution to the Temptation of End-To-End Tests: Integration Testing">The Solution to the Temptation of End-To-End Tests: Integration Testing</a></h4>
-        <span>Published on January 03, 2016</span>
+        <h4><a href="/devops/Elastic-Search-in-Docker/" title="How to Setup Elastic Search in Docker Containers">How to Setup Elastic Search in Docker Containers</a></h4>
+        <span>Published on January 18, 2016</span>
       </div><!-- /.list-item -->
     
       <div class="list-item">
-        <h4><a href="/developer%20setup/Gradle-Intellij/" title="Intellij and Gradle Setup and Integration">Intellij and Gradle Setup and Integration</a></h4>
-        <span>Published on December 22, 2015</span>
+        <h4><a href="/testing/end-to-end-testing-problem/" title="The Solution to the Temptation of End-To-End Tests: Integration Testing">The Solution to the Temptation of End-To-End Tests: Integration Testing</a></h4>
+        <span>Published on January 03, 2016</span>
       </div><!-- /.list-item -->
     
   </div><!-- /.read-more-list -->

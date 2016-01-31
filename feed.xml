@@ -4,13 +4,134 @@
 <generator uri="https://github.com/mojombo/jekyll">Jekyll</generator>
 <link rel="self" type="application/atom+xml" href="/feed.xml" />
 <link rel="alternate" type="text/html" href="" />
-<updated>2016-01-20T22:35:22-05:00</updated>
+<updated>2016-01-31T13:46:28-05:00</updated>
 <id>/</id>
 <author>
   <name>Stephen Shary</name>
   <uri>/</uri>
   <email>stephen.shary@gmail.com`</email>
 </author>
+
+
+<entry>
+  <title type="html"><![CDATA[Why choose that framework?  It's testability]]></title>
+ <link rel="alternate" type="text/html" href="/testing/Choose-Testable-Frameworks/" />
+  <id>/testing/Choose-Testable-Frameworks</id>
+  <updated>2016-01-31T00:00:00-00:00</updated>
+  <published>2016-01-31T00:00:00-05:00</published>
+  
+  <author>
+    <name>Stephen Shary</name>
+    <uri></uri>
+    <email>stephen.shary@gmail.com`</email>
+  </author>
+  <content type="html">
+    &lt;h2 id=&quot;frameworks-the-cause-of-and-solution-to-all-your-problems&quot;&gt;Frameworks: The cause of and solution to all your problems.&lt;/h2&gt;
+
+&lt;p&gt;When new frameworks come out, people can really jump on the “kool-aid” train.  I have had many
+developers and managers tout the greatness of a new framework.  It’s solves many of our problems!
+It’s super simple!  It’s really fast!  Look at how beautiful and clean the code is! OMG I’M GOING TO CRY IS IS SO AWESOME!&lt;/p&gt;
+
+&lt;p&gt;I don’t want to get down on passionate programmers.  I’ll take a passionate person over a non-plussed developer any day.  Besides, all developers work in imperfect environments.  We also tend to be very particular about development.  When we work on a problem and there is no “thing” to truly complete it well, we typically have to work with little imperfections that bother us.  After months or even years of work it’s a total relief to find an “amazing” framework that does “scratch that itch.”  It’s a joyous moment in our technical, nuanced world.&lt;/p&gt;
+
+&lt;p&gt;So this new framework is shared with other developers.  And they didn’t feel the pain with the current implementation.  They don’t feel the need to abandon with no regard to this new panacea.  And then when they see the syntax of the new “thing”, it doesn’t look so nice.  In fact, it looks rather bothersome the way that they pass the state over to computation thing.&lt;/p&gt;
+
+&lt;p&gt;The better that a framework is, the more that it typically does.  Most frameworks allow us to remove all of the boilerplate code and get down the the unique part of your project.  And the more that it does, the less you really know what it is doing.  But that’s ok!  This thing is AMAZING!&lt;/p&gt;
+
+&lt;h3 id=&quot;why-testing-here-matters&quot;&gt;Why testing here matters&lt;/h3&gt;
+
+&lt;p&gt;Testing a framework is important because we are going to need to use it.  Plus since it is so awesome, it is going to be the underlying part of what we do.  Maybe your business is selling shower curtain rings.  Now you want to do it online and this “Ruby on Rails” framework is going to allow you to do it.  The rails framework is going to underpin everything.  Sooo… it should work properly.&lt;/p&gt;
+
+&lt;p&gt;The second you start working with a framework, you are doing integration coding.  Your unit tests will become less and less useful.  You will find yourself mocking everything.  You might try to create the thinnest possible integration layer.  Maybe you even venture into the black magic of partial mocks.  Any way you slice it, you have a little code sitting on a small mountain of someone else’s work.&lt;/p&gt;
+
+&lt;p&gt;The ideal situation is a framework that shows you how to write integration tests.  You need to be able to quickly setup a portion of the framework with your extensions and verify the output.  Ideally, this starts up quickly ( &amp;lt; 100ms ) and gives you the verification that that your use of the system provides the expected output.&lt;/p&gt;
+
+&lt;p&gt;I’ll give you an example.  In the Java world, there are two popular web MVC frameworks: SpringMVC and Jersey.  These two frameworks solve the problem of handling REST calls.  They allow your map rest calls to a function and translate the outputs to a web format (JSON/HTML…).   I’m not going to go into the merits of either except for testing.  Here is the code below for a test that accepts a GET call for a user and returns a user JSON object (translated from a POJO).&lt;/p&gt;
+
+&lt;p&gt;The Jersey implementation:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;SimpleResource&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+
+  &lt;span class=&quot;nd&quot;&gt;@GET&lt;/span&gt;
+  &lt;span class=&quot;nd&quot;&gt;@Path&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;/get/things&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;nd&quot;&gt;@Produces&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;MediaType&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;TEXT_PLAIN&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;getThings&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;throws&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;IOException&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;resource response&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;The SpringMVC implementation:&lt;/p&gt;
+
+&lt;p&gt;public class SimpleController {&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;  &lt;span class=&quot;nd&quot;&gt;@RequestMapping&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;value&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;/get/things&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;method&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;RequestMethod&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;GET&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;produces&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;MediaType&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;TEXT_PLAIN&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;nd&quot;&gt;@ResponseBody&lt;/span&gt;
+  &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;getThings&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;throws&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;IOException&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;controller response&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Both are fairly similar.  Not too bad.  Now let’s look at the tests.&lt;/p&gt;
+
+&lt;p&gt;The Jersey Test:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;  &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;SimpleTest&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;extends&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;JerseyTest&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+
+    &lt;span class=&quot;nd&quot;&gt;@Override&lt;/span&gt;
+    &lt;span class=&quot;kd&quot;&gt;protected&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Application&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;configure&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ResourceConfig&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;SimpleResource&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;class&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+
+    &lt;span class=&quot;nd&quot;&gt;@Test&lt;/span&gt;
+    &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;test&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;response&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;target&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;/get/things&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;request&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;().&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;get&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;class&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;assertEquals&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;resource response&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;response&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;The SpringMVC Test:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;SimpleControllerTest&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+
+  &lt;span class=&quot;nd&quot;&gt;@Test&lt;/span&gt;
+	&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;simple&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;throws&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Exception&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;standaloneSetup&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Controller&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mockedService&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)).&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;build&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt;
+			&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;perform&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;get&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;/get/things&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;accept&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;MediaType&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;TEXT_PLAIN&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;))&lt;/span&gt;
+			&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;andExpect&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;status&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;().&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;isOk&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;())&lt;/span&gt;
+			&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;andExpect&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;content&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;().&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;contentType&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;text/plain&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;))&lt;/span&gt;
+			&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;andExpect&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;content&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;().&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;string&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;controller response&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;));&lt;/span&gt;
+	&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Both testing frameworks will allow you to build a very detailed request that is sent into the application using REST.  We can set the HTTP method, the path, and headers.&lt;/p&gt;
+
+&lt;p&gt;The difference between these two examples is that SpringMVC has created an entire framework that will inspect the response.  The Jersey testing framework will allow you to get the response body.  The interesting part about the Jersey testing framework is that it was really created just to test the framework internally:&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Jersey Test Framework originated as an internal tool used for verifying the correct implementation of server-side components&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;What we lack here that is possible with the SpringMVC framework is the full ability to assert the response.  It’s also interesting that the top stack overflow question: “&lt;a href=&quot;http://stackoverflow.com/questions/21413738/unit-testing-jersey-restful-services&quot;&gt;Unit testing jersey Restful Services&lt;/a&gt;” has the top answer being to use RestAssured (A generic API testing framework).  Jersey isn’t a bad project.  It’s really nice and very fast.  My concern is that I am limited in verifying how it will work using fast integration tests.&lt;/p&gt;
+
+&lt;h2 id=&quot;ok-so-who-cares--its-just-testing&quot;&gt;Ok…. So Who Cares!?!  It’s Just testing!&lt;/h2&gt;
+
+&lt;p&gt;Automated testing is important.  If don’t agree or hesitate to agree, then I’ve already lost my case.  When I have brought in a new framework, I have three options when using it:&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Let’s verify how it works through integration testing.&lt;/li&gt;
+  &lt;li&gt;Let’s open up the source code and read through it.&lt;/li&gt;
+  &lt;li&gt;Let’s tell ourselves after it’s in production: “Other people use it”, “It seemed fine.”, “That’s what we pay our QA folks for.”, “I saw it on [hacker news]/[Some conference]/[youtube] and it should work fine.”&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;I think option one is the best.  It provides a safety net for upgrades, understanding the framework (and your code).  It safely allows other people to transition onto your team and guides them in how the application works without weeks/months/years of understanding.&lt;/p&gt;
+
+&lt;p&gt;Option two is valiant but many times you want the framework to solve a boilerplate or difficult problem for you.  So the thought of understanding how this framework handles connection pooling or SSL or whatever gets you confused.  If you are lucky enough to have a core contributor to the project on your team then that is great, but &lt;a href=&quot;http://modeling-languages.com/whats-bus-factor-software-project/&quot;&gt;your bus factor is 1&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;The last option is dumb.  I’m not gonna sugar-coat this bad boy.  The probability of failure goes up and what’s worse is that you will find it late in your project.  I don’t ever want to work on a project that doesn’t have tests.  I’m not a QA nut, I just don’t want to do support!&lt;/p&gt;
+
+    &lt;p&gt;&lt;a href=&quot;/testing/Choose-Testable-Frameworks/&quot;&gt;Why choose that framework?  It&#39;s testability&lt;/a&gt; was originally published by Stephen Shary at &lt;a href=&quot;&quot;&gt;STeve Smash Code&lt;/a&gt; on January 31, 2016.&lt;/p&gt;
+  </content>
+</entry>
 
 
 <entry>
@@ -179,9 +300,7 @@ Short feedback loops give us confidence. Confidence leads to enjoyment.&lt;/p&gt
 
 &lt;p&gt;Below is an example idea configuration used in my base &lt;code class=&quot;highlighter-rouge&quot;&gt;build.gradle&lt;/code&gt; file in the project.  I’ll go into detail on what each of the different sections mean.&lt;/p&gt;
 
-&lt;noscript&gt;&lt;pre&gt;400: Invalid request
-&lt;/pre&gt;&lt;/noscript&gt;
-&lt;script src=&quot;https://gist.github.com/9a2fa5246c3dfbf04943.js&quot;&gt; &lt;/script&gt;
+&lt;p&gt;true&lt;script src=&quot;https://gist.github.com/9a2fa5246c3dfbf04943.js&quot;&gt; &lt;/script&gt;&lt;/p&gt;
 
 &lt;p&gt;Looking at lines 7 and 8, there are two basic settings that can be set: the JDK level and the version control system.  These are basic options in the &lt;a href=&quot;https://docs.gradle.org/current/dsl/org.gradle.plugins.ide.idea.model.IdeaProject.html&quot;&gt;idea plugin Source&lt;/a&gt;  Being documented and pretty straight-forward, it’s not hard to understand what these do.  Let’s move the crazier part.&lt;/p&gt;
 
@@ -244,9 +363,7 @@ Short feedback loops give us confidence. Confidence leads to enjoyment.&lt;/p&gt
 
 &lt;p&gt;As before, below is the gist of the project changes.  We’ll go into details about what each line is.&lt;/p&gt;
 
-&lt;noscript&gt;&lt;pre&gt;400: Invalid request
-&lt;/pre&gt;&lt;/noscript&gt;
-&lt;script src=&quot;https://gist.github.com/a163f485c86ff4452bf8.js&quot;&gt; &lt;/script&gt;
+&lt;p&gt;true&lt;script src=&quot;https://gist.github.com/a163f485c86ff4452bf8.js&quot;&gt; &lt;/script&gt;&lt;/p&gt;
 
 &lt;p&gt;The first thing to note is that we are going to be modifying the ‘.iml’ file in the project.  This will allow us to modify which plugins will be active for the module.  The idea plugin will allow us to write to this with lines: 7.  The first thing that we do is get the “FacetManager” node.  This node allows us to set which plugins are active in the module.  Lines 10 through 17 are where we get the xml tag or build one.&lt;/p&gt;
 

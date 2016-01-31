@@ -1,6 +1,14 @@
 [
   
     {
+      "title"    : "Why choose that framework?  It&#39;s testability",
+      "category" : "",
+      "tags"     : "Testing architecture",
+      "url"      : "/testing/Choose-Testable-Frameworks/",
+      "date"     : "2016-01-31 00:00:00 -0500"
+    } ,
+  
+    {
       "title"    : "How to Setup Elastic Search in Docker Containers",
       "category" : "",
       "tags"     : "Docker Elastic-Search",

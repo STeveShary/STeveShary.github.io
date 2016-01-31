@@ -110,6 +110,132 @@
   <header>
     
     <div class="entry-meta">
+      <span class="entry-date date published updated"><time datetime="2016-01-31T00:00:00-05:00"><a href="/testing/Choose-Testable-Frameworks/">January 31, 2016</a></time></span><span class="author vcard"><span class="fn"><a href="/about/" title="About Stephen Shary">Stephen Shary</a></span></span>
+      
+      <span class="entry-reading-time">
+        <i class="fa fa-clock-o"></i>
+        
+        Reading time ~6 minutes
+      </span><!-- /.entry-reading-time -->
+      
+    </div><!-- /.entry-meta -->
+    
+      <h1 class="entry-title"><a href="/testing/Choose-Testable-Frameworks/" rel="bookmark" title="Why choose that framework?  It's testability" itemprop="url">Why choose that framework?  It's testability</a></h1>
+    
+  </header>
+  <div class="entry-content">
+    
+      <h2 id="frameworks-the-cause-of-and-solution-to-all-your-problems">Frameworks: The cause of and solution to all your problems.</h2>
+
+<p>When new frameworks come out, people can really jump on the “kool-aid” train.  I have had many
+developers and managers tout the greatness of a new framework.  It’s solves many of our problems!
+It’s super simple!  It’s really fast!  Look at how beautiful and clean the code is! OMG I’M GOING TO CRY IS IS SO AWESOME!</p>
+
+<p>I don’t want to get down on passionate programmers.  I’ll take a passionate person over a non-plussed developer any day.  Besides, all developers work in imperfect environments.  We also tend to be very particular about development.  When we work on a problem and there is no “thing” to truly complete it well, we typically have to work with little imperfections that bother us.  After months or even years of work it’s a total relief to find an “amazing” framework that does “scratch that itch.”  It’s a joyous moment in our technical, nuanced world.</p>
+
+<p>So this new framework is shared with other developers.  And they didn’t feel the pain with the current implementation.  They don’t feel the need to abandon with no regard to this new panacea.  And then when they see the syntax of the new “thing”, it doesn’t look so nice.  In fact, it looks rather bothersome the way that they pass the state over to computation thing.</p>
+
+<p>The better that a framework is, the more that it typically does.  Most frameworks allow us to remove all of the boilerplate code and get down the the unique part of your project.  And the more that it does, the less you really know what it is doing.  But that’s ok!  This thing is AMAZING!</p>
+
+<h3 id="why-testing-here-matters">Why testing here matters</h3>
+
+<p>Testing a framework is important because we are going to need to use it.  Plus since it is so awesome, it is going to be the underlying part of what we do.  Maybe your business is selling shower curtain rings.  Now you want to do it online and this “Ruby on Rails” framework is going to allow you to do it.  The rails framework is going to underpin everything.  Sooo… it should work properly.</p>
+
+<p>The second you start working with a framework, you are doing integration coding.  Your unit tests will become less and less useful.  You will find yourself mocking everything.  You might try to create the thinnest possible integration layer.  Maybe you even venture into the black magic of partial mocks.  Any way you slice it, you have a little code sitting on a small mountain of someone else’s work.</p>
+
+<p>The ideal situation is a framework that shows you how to write integration tests.  You need to be able to quickly setup a portion of the framework with your extensions and verify the output.  Ideally, this starts up quickly ( &lt; 100ms ) and gives you the verification that that your use of the system provides the expected output.</p>
+
+<p>I’ll give you an example.  In the Java world, there are two popular web MVC frameworks: SpringMVC and Jersey.  These two frameworks solve the problem of handling REST calls.  They allow your map rest calls to a function and translate the outputs to a web format (JSON/HTML…).   I’m not going to go into the merits of either except for testing.  Here is the code below for a test that accepts a GET call for a user and returns a user JSON object (translated from a POJO).</p>
+
+<p>The Jersey implementation:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">SimpleResource</span> <span class="o">{</span>
+
+  <span class="nd">@GET</span>
+  <span class="nd">@Path</span><span class="o">(</span><span class="s">"/get/things"</span><span class="o">)</span>
+  <span class="nd">@Produces</span><span class="o">(</span><span class="n">MediaType</span><span class="o">.</span><span class="na">TEXT_PLAIN</span><span class="o">)</span>
+  <span class="kd">public</span> <span class="n">String</span> <span class="n">getThings</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
+      <span class="k">return</span> <span class="s">"resource response"</span><span class="o">;</span>
+  <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>The SpringMVC implementation:</p>
+
+<p>public class SimpleController {</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java">  <span class="nd">@RequestMapping</span><span class="o">(</span><span class="n">value</span> <span class="o">=</span> <span class="s">"/get/things"</span><span class="o">,</span> <span class="n">method</span> <span class="o">=</span> <span class="n">RequestMethod</span><span class="o">.</span><span class="na">GET</span><span class="o">,</span> <span class="n">produces</span><span class="o">=</span><span class="n">MediaType</span><span class="o">.</span><span class="na">TEXT_PLAIN</span><span class="o">)</span>
+  <span class="nd">@ResponseBody</span>
+  <span class="kd">public</span> <span class="n">String</span> <span class="n">getThings</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
+      <span class="k">return</span> <span class="s">"controller response"</span><span class="o">;</span>
+  <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Both are fairly similar.  Not too bad.  Now let’s look at the tests.</p>
+
+<p>The Jersey Test:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java">  <span class="kd">public</span> <span class="kd">class</span> <span class="nc">SimpleTest</span> <span class="kd">extends</span> <span class="n">JerseyTest</span> <span class="o">{</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">protected</span> <span class="n">Application</span> <span class="n">configure</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="n">ResourceConfig</span><span class="o">(</span><span class="n">SimpleResource</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Test</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="n">test</span><span class="o">()</span> <span class="o">{</span>
+        <span class="n">String</span> <span class="n">response</span> <span class="o">=</span> <span class="n">target</span><span class="o">(</span><span class="s">"/get/things"</span><span class="o">).</span><span class="na">request</span><span class="o">().</span><span class="na">get</span><span class="o">(</span><span class="n">String</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+        <span class="n">assertEquals</span><span class="o">(</span><span class="s">"resource response"</span><span class="o">,</span> <span class="n">response</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>The SpringMVC Test:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">SimpleControllerTest</span> <span class="o">{</span>
+
+  <span class="nd">@Test</span>
+	<span class="kd">public</span> <span class="kt">void</span> <span class="n">simple</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+    <span class="n">standaloneSetup</span><span class="o">(</span><span class="k">new</span> <span class="n">Controller</span><span class="o">(</span><span class="n">mockedService</span><span class="o">)).</span><span class="na">build</span><span class="o">()</span>
+			<span class="o">.</span><span class="na">perform</span><span class="o">(</span><span class="n">get</span><span class="o">(</span><span class="s">"/get/things"</span><span class="o">).</span><span class="na">accept</span><span class="o">(</span><span class="n">MediaType</span><span class="o">.</span><span class="na">TEXT_PLAIN</span><span class="o">))</span>
+			<span class="o">.</span><span class="na">andExpect</span><span class="o">(</span><span class="n">status</span><span class="o">().</span><span class="na">isOk</span><span class="o">())</span>
+			<span class="o">.</span><span class="na">andExpect</span><span class="o">(</span><span class="n">content</span><span class="o">().</span><span class="na">contentType</span><span class="o">(</span><span class="s">"text/plain"</span><span class="o">))</span>
+			<span class="o">.</span><span class="na">andExpect</span><span class="o">(</span><span class="n">content</span><span class="o">().</span><span class="na">string</span><span class="o">(</span><span class="s">"controller response"</span><span class="o">));</span>
+	<span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Both testing frameworks will allow you to build a very detailed request that is sent into the application using REST.  We can set the HTTP method, the path, and headers.</p>
+
+<p>The difference between these two examples is that SpringMVC has created an entire framework that will inspect the response.  The Jersey testing framework will allow you to get the response body.  The interesting part about the Jersey testing framework is that it was really created just to test the framework internally:</p>
+
+<blockquote>
+  <p>Jersey Test Framework originated as an internal tool used for verifying the correct implementation of server-side components</p>
+</blockquote>
+
+<p>What we lack here that is possible with the SpringMVC framework is the full ability to assert the response.  It’s also interesting that the top stack overflow question: “<a href="http://stackoverflow.com/questions/21413738/unit-testing-jersey-restful-services">Unit testing jersey Restful Services</a>” has the top answer being to use RestAssured (A generic API testing framework).  Jersey isn’t a bad project.  It’s really nice and very fast.  My concern is that I am limited in verifying how it will work using fast integration tests.</p>
+
+<h2 id="ok-so-who-cares--its-just-testing">Ok…. So Who Cares!?!  It’s Just testing!</h2>
+
+<p>Automated testing is important.  If don’t agree or hesitate to agree, then I’ve already lost my case.  When I have brought in a new framework, I have three options when using it:</p>
+
+<ol>
+  <li>Let’s verify how it works through integration testing.</li>
+  <li>Let’s open up the source code and read through it.</li>
+  <li>Let’s tell ourselves after it’s in production: “Other people use it”, “It seemed fine.”, “That’s what we pay our QA folks for.”, “I saw it on [hacker news]/[Some conference]/[youtube] and it should work fine.”</li>
+</ol>
+
+<p>I think option one is the best.  It provides a safety net for upgrades, understanding the framework (and your code).  It safely allows other people to transition onto your team and guides them in how the application works without weeks/months/years of understanding.</p>
+
+<p>Option two is valiant but many times you want the framework to solve a boilerplate or difficult problem for you.  So the thought of understanding how this framework handles connection pooling or SSL or whatever gets you confused.  If you are lucky enough to have a core contributor to the project on your team then that is great, but <a href="http://modeling-languages.com/whats-bus-factor-software-project/">your bus factor is 1</a>.</p>
+
+<p>The last option is dumb.  I’m not gonna sugar-coat this bad boy.  The probability of failure goes up and what’s worse is that you will find it late in your project.  I don’t ever want to work on a project that doesn’t have tests.  I’m not a QA nut, I just don’t want to do support!</p>
+
+    
+  </div><!-- /.entry-content -->
+</article><!-- /.hentry -->
+
+<article class="hentry">
+  <header>
+    
+    <div class="entry-meta">
       <span class="entry-date date published updated"><time datetime="2016-01-18T00:00:00-05:00"><a href="/devops/Elastic-Search-in-Docker/">January 18, 2016</a></time></span><span class="author vcard"><span class="fn"><a href="/about/" title="About Stephen Shary">Stephen Shary</a></span></span>
       
       <span class="entry-reading-time">
@@ -288,9 +414,7 @@ Short feedback loops give us confidence. Confidence leads to enjoyment.</p>
 
 <p>Below is an example idea configuration used in my base <code class="highlighter-rouge">build.gradle</code> file in the project.  I’ll go into detail on what each of the different sections mean.</p>
 
-<noscript><pre>400: Invalid request
-</pre></noscript>
-<script src="https://gist.github.com/9a2fa5246c3dfbf04943.js"> </script>
+<p>true<script src="https://gist.github.com/9a2fa5246c3dfbf04943.js"> </script></p>
 
 <p>Looking at lines 7 and 8, there are two basic settings that can be set: the JDK level and the version control system.  These are basic options in the <a href="https://docs.gradle.org/current/dsl/org.gradle.plugins.ide.idea.model.IdeaProject.html">idea plugin Source</a>  Being documented and pretty straight-forward, it’s not hard to understand what these do.  Let’s move the crazier part.</p>
 
@@ -353,9 +477,7 @@ Short feedback loops give us confidence. Confidence leads to enjoyment.</p>
 
 <p>As before, below is the gist of the project changes.  We’ll go into details about what each line is.</p>
 
-<noscript><pre>400: Invalid request
-</pre></noscript>
-<script src="https://gist.github.com/a163f485c86ff4452bf8.js"> </script>
+<p>true<script src="https://gist.github.com/a163f485c86ff4452bf8.js"> </script></p>
 
 <p>The first thing to note is that we are going to be modifying the ‘.iml’ file in the project.  This will allow us to modify which plugins will be active for the module.  The idea plugin will allow us to write to this with lines: 7.  The first thing that we do is get the “FacetManager” node.  This node allows us to set which plugins are active in the module.  Lines 10 through 17 are where we get the xml tag or build one.</p>
 
